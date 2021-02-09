@@ -1,0 +1,2 @@
+import './registerEvents';
+import './registerRules';
