@@ -10,7 +10,7 @@ import {
   Engine,
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
-import { Food, Production } from '@civ-clone/civ1-world/Yields';
+import { Food, Production, Trade } from '@civ-clone/civ1-world/Yields';
 import {
   PlayerRegistry,
   instance as playerRegistryInstance,
@@ -21,7 +21,7 @@ import {
 } from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import Built from '@civ-clone/core-world/Rules/Built';
 import Civilization from '@civ-clone/core-civilization/Civilization';
-import Client from '@civ-clone/core-client/Client';
+import Client from '@civ-clone/core-civ-client/Client';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
@@ -38,15 +38,26 @@ export const getRules: (
   engine?: Engine,
   playerRegistry?: PlayerRegistry,
   playerWorldRegistry?: PlayerWorldRegistry,
-  yieldRegistry?: YieldRegistry
+  yieldRegistry?: YieldRegistry,
+  randomNumberGenerator?: () => number
 ) => Built[] = (
   civilizationRegistry: CivilizationRegistry = civilizationRegistryInstance,
   clientRegistry: ClientRegistry = clientRegistryInstance,
   engine: Engine = engineInstance,
   playerRegistry: PlayerRegistry = playerRegistryInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
-  yieldRegistry: YieldRegistry = yieldRegistryInstance
+  yieldRegistry: YieldRegistry = yieldRegistryInstance,
+  randomNumberGenerator: () => number = (): number => Math.random()
 ): Built[] => [
+  new Built(
+    new Effect((world: World): void =>
+      playerRegistry
+        .entries()
+        .forEach((player: Player): void =>
+          playerWorldRegistry.register(new PlayerWorld(player, world))
+        )
+    )
+  ),
   new Built(
     new Effect((world: World): void => {
       const cache = new Map(),
@@ -59,6 +70,7 @@ export const getRules: (
                 [
                   [Food, 4],
                   [Production, 2],
+                  [Trade, 1],
                 ],
                 yieldRegistry.entries()
               )
@@ -66,57 +78,6 @@ export const getRules: (
           }
 
           return cache.get(tile);
-        },
-        setUpPlayer = (ClientType: typeof Client): void => {
-          // TODO: this could be a set of rules
-          const player = new Player(),
-            client = new ClientType(player),
-            playerWorld = new PlayerWorld(player, world);
-
-          playerWorldRegistry.register(playerWorld);
-          clientRegistry.register(client);
-
-          // TODO
-          // client.chooseCivilization(availableCivilizations);
-          const RandomCivilization: typeof Civilization =
-            availableCivilizations[
-              Math.floor(Math.random() * availableCivilizations.length)
-            ];
-
-          player.setCivilization(new RandomCivilization());
-          availableCivilizations = availableCivilizations.filter(
-            (CivilizationType: typeof Civilization): boolean =>
-              !(player.civilization() instanceof CivilizationType)
-          );
-
-          startingSquares = startingSquares
-            .filter((tile: Tile): boolean => !usedStartSquares.includes(tile))
-            .filter((tile: Tile): boolean =>
-              usedStartSquares.every(
-                (startSquare: Tile): boolean =>
-                  startSquare.distanceFrom(tile) > 4
-              )
-            );
-
-          const startingSquare =
-            startingSquares[Math.floor(startingSquares.length * Math.random())];
-
-          if (!startingSquare) {
-            throw new TypeError(
-              `base-player/Events/World/built: startingSquare is '${startingSquare}'.`
-            );
-          }
-
-          usedStartSquares.push(startingSquare);
-
-          playerRegistry.register(player);
-
-          new Settlers(null, player, startingSquare);
-
-          // ensure surrounding tiles are visible
-          startingSquare.getSurroundingArea().forEach((tile: Tile): void => {
-            engine.emit('tile:seen', tile, player);
-          });
         };
 
       engine.emit('world:generate-start-tiles');
@@ -125,6 +86,8 @@ export const getRules: (
         usedStartSquares: Tile[] = [],
         dummyPlayer = new Player();
 
+      // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
+      //  meet the criteria of having a distance of >4...
       let startingSquares = world
         .filter((tile: Tile): boolean => tile.isLand())
         .sort(
@@ -135,12 +98,43 @@ export const getRules: (
 
       engine.emit('world:start-tiles', startingSquares);
 
-      let availableCivilizations = civilizationRegistry.entries();
-
       // TODO: this needs to be setting up right clients for each player
-      while (playerRegistry.length < numberOfPlayers) {
-        // setUpPlayer(SimpleAIClient);
-      }
+      (clientRegistry.entries() as Client[]).forEach((client: Client): void => {
+        const player = client.player();
+
+        client.chooseCivilization(civilizationRegistry.entries());
+
+        civilizationRegistry.unregister(
+          player.civilization().constructor as typeof Civilization
+        );
+
+        // TODO: configurable/Rule
+        startingSquares = startingSquares.filter((tile: Tile): boolean =>
+          usedStartSquares.every(
+            (startSquare: Tile): boolean => startSquare.distanceFrom(tile) > 4
+          )
+        );
+
+        const startingSquare =
+          startingSquares[
+            Math.floor(startingSquares.length * randomNumberGenerator())
+          ];
+
+        if (!startingSquare) {
+          throw new TypeError(
+            `base-player/Events/World/built: startingSquare is '${startingSquare}'.`
+          );
+        }
+
+        usedStartSquares.push(startingSquare);
+
+        new Settlers(null, player, startingSquare);
+
+        // ensure surrounding tiles are visible
+        startingSquare.getSurroundingArea().forEach((tile: Tile): void => {
+          engine.emit('tile:seen', tile, player);
+        });
+      });
 
       engine.emit('game:start');
     })

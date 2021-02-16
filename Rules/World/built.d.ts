@@ -11,6 +11,7 @@ export declare const getRules: (
   engine?: Engine,
   playerRegistry?: PlayerRegistry,
   playerWorldRegistry?: PlayerWorldRegistry,
-  yieldRegistry?: YieldRegistry
+  yieldRegistry?: YieldRegistry,
+  randomNumberGenerator?: () => number
 ) => Built[];
 export default getRules;
