@@ -65,7 +65,7 @@ export const getRules: (
           if (!cache.has(tile)) {
             cache.set(
               tile,
-              tile.getSurroundingArea().score(
+              tile.score(
                 player,
                 [
                   [Food, 4],
@@ -78,13 +78,22 @@ export const getRules: (
           }
 
           return cache.get(tile);
-        };
+        },
+        areaScore = (tile: Tile, player: Player): number =>
+          tile
+            .getSurroundingArea()
+            .entries()
+            .reduce(
+              (total: number, tile: Tile): number =>
+                total + tileScore(tile, player),
+              0
+            );
 
       engine.emit('world:generate-start-tiles');
 
       const numberOfPlayers = engine.option('players', 5),
         usedStartSquares: Tile[] = [],
-        dummyPlayer = new Player();
+        [player] = playerRegistry.entries();
 
       // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
       //  meet the criteria of having a distance of >4...
@@ -92,7 +101,7 @@ export const getRules: (
         .filter((tile: Tile): boolean => tile.isLand())
         .sort(
           (a: Tile, b: Tile): number =>
-            tileScore(b, dummyPlayer) - tileScore(a, dummyPlayer)
+            areaScore(b, player) - areaScore(a, player)
         )
         .slice(0, numberOfPlayers * 20);
 
