@@ -28,6 +28,7 @@ const getRules = (ruleRegistry = RuleRegistry_1.instance, cityRegistry = CityReg
                 return;
             }
             busyAction.process();
+            return;
         }
         unit.setActive();
         unit.moves().set(unit.movement());

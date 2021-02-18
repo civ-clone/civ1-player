@@ -73,6 +73,8 @@ export const getRules: (
             }
 
             busyAction.process();
+
+            return;
           }
 
           unit.setActive();
