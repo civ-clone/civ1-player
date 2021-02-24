@@ -11,6 +11,7 @@ import {
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
 import { Food, Production, Trade } from '@civ-clone/civ1-world/Yields';
+import { Grassland, Plains, River } from '@civ-clone/civ1-world/Terrains';
 import {
   PlayerRegistry,
   instance as playerRegistryInstance,
@@ -26,6 +27,7 @@ import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
 import Settlers from '@civ-clone/base-unit-settlers/Settlers';
+import Terrain from '@civ-clone/core-terrain/Terrain';
 import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
 import YieldRegistry, {
@@ -60,10 +62,11 @@ export const getRules: (
   ),
   new Built(
     new Effect((world: World): void => {
-      const cache = new Map(),
+      const tileCache: Map<Tile, number> = new Map(),
+        areaCache: Map<Tile, number> = new Map(),
         tileScore = (tile: Tile, player: Player): number => {
-          if (!cache.has(tile)) {
-            cache.set(
+          if (!tileCache.has(tile)) {
+            tileCache.set(
               tile,
               tile.score(
                 player,
@@ -77,17 +80,25 @@ export const getRules: (
             );
           }
 
-          return cache.get(tile);
+          return tileCache.get(tile) as number;
         },
-        areaScore = (tile: Tile, player: Player): number =>
-          tile
-            .getSurroundingArea()
-            .entries()
-            .reduce(
-              (total: number, tile: Tile): number =>
-                total + tileScore(tile, player),
-              0
+        areaScore = (tile: Tile, player: Player): number => {
+          if (!areaCache.has(tile)) {
+            areaCache.set(
+              tile,
+              tile
+                .getSurroundingArea()
+                .entries()
+                .reduce(
+                  (total: number, tile: Tile): number =>
+                    total + tileScore(tile, player),
+                  0
+                )
             );
+          }
+
+          return areaCache.get(tile) as number;
+        };
 
       engine.emit('world:generate-start-tiles');
 
@@ -97,13 +108,16 @@ export const getRules: (
 
       // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
       //  meet the criteria of having a distance of >4...
-      let startingSquares = world
-        .filter((tile: Tile): boolean => tile.isLand())
-        .sort(
-          (a: Tile, b: Tile): number =>
-            areaScore(b, player) - areaScore(a, player)
+      let startingSquares = world.filter((tile: Tile): boolean =>
+        [Grassland, Plains, River].some(
+          (TerrainType: typeof Terrain) => tile.terrain() instanceof TerrainType
         )
-        .slice(0, numberOfPlayers * 20);
+      );
+      // .sort(
+      //   // (a: Tile, b: Tile): number =>
+      //   //   areaScore(b, player) - areaScore(a, player)
+      // )
+      // .slice(0, numberOfPlayers * 20);
 
       engine.emit('world:start-tiles', startingSquares);
 

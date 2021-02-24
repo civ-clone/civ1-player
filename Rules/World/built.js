@@ -5,6 +5,7 @@ const CivilizationRegistry_1 = require("@civ-clone/core-civilization/Civilizatio
 const ClientRegistry_1 = require("@civ-clone/core-client/ClientRegistry");
 const Engine_1 = require("@civ-clone/core-engine/Engine");
 const Yields_1 = require("@civ-clone/civ1-world/Yields");
+const Terrains_1 = require("@civ-clone/civ1-world/Terrains");
 const PlayerRegistry_1 = require("@civ-clone/core-player/PlayerRegistry");
 const PlayerWorldRegistry_1 = require("@civ-clone/core-player-world/PlayerWorldRegistry");
 const Built_1 = require("@civ-clone/core-world/Rules/Built");
@@ -17,27 +18,35 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
         .entries()
         .forEach((player) => playerWorldRegistry.register(new PlayerWorld_1.default(player, world))))),
     new Built_1.default(new Effect_1.default((world) => {
-        const cache = new Map(), tileScore = (tile, player) => {
-            if (!cache.has(tile)) {
-                cache.set(tile, tile.score(player, [
+        const tileCache = new Map(), areaCache = new Map(), tileScore = (tile, player) => {
+            if (!tileCache.has(tile)) {
+                tileCache.set(tile, tile.score(player, [
                     [Yields_1.Food, 4],
                     [Yields_1.Production, 2],
                     [Yields_1.Trade, 1],
                 ], yieldRegistry.entries()));
             }
-            return cache.get(tile);
-        }, areaScore = (tile, player) => tile
-            .getSurroundingArea()
-            .entries()
-            .reduce((total, tile) => total + tileScore(tile, player), 0);
+            return tileCache.get(tile);
+        }, areaScore = (tile, player) => {
+            if (!areaCache.has(tile)) {
+                areaCache.set(tile, tile
+                    .getSurroundingArea()
+                    .entries()
+                    .reduce((total, tile) => total + tileScore(tile, player), 0));
+            }
+            return areaCache.get(tile);
+        };
         engine.emit('world:generate-start-tiles');
         const numberOfPlayers = engine.option('players', 5), usedStartSquares = [], [player] = playerRegistry.entries();
         // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
         //  meet the criteria of having a distance of >4...
         let startingSquares = world
-            .filter((tile) => tile.isLand())
-            .sort((a, b) => areaScore(b, player) - areaScore(a, player))
-            .slice(0, numberOfPlayers * 20);
+            .filter((tile) => [Terrains_1.Grassland, Terrains_1.Plains, Terrains_1.River].some((TerrainType) => tile.terrain() instanceof TerrainType));
+        // .sort(
+        //   // (a: Tile, b: Tile): number =>
+        //   //   areaScore(b, player) - areaScore(a, player)
+        // )
+        // .slice(0, numberOfPlayers * 20);
         engine.emit('world:start-tiles', startingSquares);
         // TODO: this needs to be setting up right clients for each player
         clientRegistry.entries().forEach((client) => {
