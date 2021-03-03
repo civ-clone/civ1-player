@@ -16,6 +16,13 @@
   dependencies:
     "@civ-clone/core-player" "^0.1.0"
 
+"@civ-clone/base-player-action-end-turn@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@civ-clone/base-player-action-end-turn/-/base-player-action-end-turn-0.1.0.tgz#79da214a6b9f088c523b140321931f365063309c"
+  integrity sha512-4vbzFxn6SLl08ERj7T8trYpIjCixr50goXcNqGH1tGfDW8ockgfGhyy4XbTiBRKMXqwED9KjaxybYTfcRIoIEg==
+  dependencies:
+    "@civ-clone/core-player" "^0.1.0"
+
 "@civ-clone/base-player-action-inactive-unit@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@civ-clone/base-player-action-inactive-unit/-/base-player-action-inactive-unit-0.1.0.tgz#38a5eb600e076609e4e46c0bf4d917e3a5281aa8"
@@ -880,9 +887,9 @@
     "@civ-clone/core-yield" "^0.1.0"
 
 "@civ-clone/core-city-build@^0.1.0":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-city-build/-/core-city-build-0.1.1.tgz#aa436d6baf6e6d17e3ad9671beb408c0e6c87f6f"
-  integrity sha512-d0XjhETZrDDaWkzNEShkObTAB7NgEkZcs2J724UWR49h08E4RYHWp+zz48B4lJdT6ohTTSb8wfT3gRfo4IjLGg==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-city-build/-/core-city-build-0.1.2.tgz#5c4195b9a839b23e824190d15127510d2735d5c1"
+  integrity sha512-+oxcJ/9jcOe9PAoV5arzUhmS/iSDipxd9e0g9E4nkHY2DimCebtepjezG1AkjqDqsCAicXpm4kn/Bf5y+DZTFw==
   dependencies:
     "@civ-clone/core-city" "^0.1.0"
     "@civ-clone/core-city-improvement" "^0.1.0"
@@ -915,9 +922,9 @@
     "@civ-clone/core-rule" "^0.1.0"
 
 "@civ-clone/core-city@^0.1.0":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-city/-/core-city-0.1.1.tgz#dbb496a8ea4e54fed499a75f3e991960261d684c"
-  integrity sha512-ttDyiiWRy9jnrjFI1zmBFDIKhBv5PxlGHqyc9Rt4rurpwRGafZhNhRvQXs4/BkfW5/0Ufo7Yz3G+ttmu5jkcUg==
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-city/-/core-city-0.1.3.tgz#07ad2d87f5753486bf51e7eaefee63e508ff313b"
+  integrity sha512-iv/oatWjvhQvp5sa1kuI+mFq73PU/wfHejWEAPIAdUSJv3N5RwW2PSTAPSMGIdQE04jw+FiudrDBpLpaBEJIZQ==
   dependencies:
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-player" "^0.1.0"
@@ -954,9 +961,9 @@
     "@civ-clone/core-registry" "^0.1.0"
 
 "@civ-clone/core-data-object@^0.1.0":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-data-object/-/core-data-object-0.1.1.tgz#d8dc8ee2d805ec2410b7f8cbf0725f9199019d42"
-  integrity sha512-kkET5mHzWYLtvwf9CwnyrnYPjajshdMOE4fVOL6QWRAaE1CViefL1zdftRZJ4GDe3PQuBJeK5UgEuvubJF4HOQ==
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-data-object/-/core-data-object-0.1.4.tgz#29c51d64f5e167f8a617928b43fa5702670a12fe"
+  integrity sha512-Qe39BKWzazXbeEZNec66+i1/jdnvEA7bzKVeVo0g2IPJTAeguKJE6dU92yiWnNDrpNI0aDpT0vJOC07v8jxrSA==
   dependencies:
     "@civ-clone/core-registry" "^0.1.0"
     ulid "^2.3.0"
@@ -971,9 +978,9 @@
     glob "^7.1.6"
 
 "@civ-clone/core-player-world@^0.1.0":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-player-world/-/core-player-world-0.1.2.tgz#c353a77d7a2d075afc00f56f806ee18b178a1d98"
-  integrity sha512-+6JxuhACfvqv+1nZhLgavaHW+UkP5Ehi5+WItqheX3RbmK5K52+TwiCLnk2ZbCaSos7JMM4KGhMpqV07w2AtVQ==
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-player-world/-/core-player-world-0.1.3.tgz#328f0c5fd2fff18059a4be70e35ea922eb02e2eb"
+  integrity sha512-u4vD24gLq+V8gupo5EYTTkgXcQ8QPQ6ixwxuY2Ad2uKvib7JLJ7DliZuErp4kuctmmD6hJSyCrYUWf/l0SGO1w==
   dependencies:
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-player" "^0.1.0"
@@ -1005,9 +1012,9 @@
     "@civ-clone/core-registry" "^0.1"
 
 "@civ-clone/core-science@^0.1.0":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-science/-/core-science-0.1.2.tgz#2da751f1afee00217e5f5bc9df879efb8096bbdf"
-  integrity sha512-zQjdUYKMqxIux7yMz8gKom+0m8vAo7DRMPgS6ZaSm65gX5vKhzxR0ImNXPTbepJ9hgVsDa8eMIqojyfPc2JKxw==
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-science/-/core-science-0.1.3.tgz#f8fe1c7b56af8f6bde44f39595551b963a781ad0"
+  integrity sha512-bFCPAUkumSBD+osPnMhdNo/PoFftOcqL5bABPHzuhdsrAP8M0NFZmBlwoJJFeQjIpRFMI7OxnwGvig909joUYw==
   dependencies:
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-player" "^0.1.0"
@@ -1034,9 +1041,9 @@
     "@civ-clone/core-rule" "^0.1.0"
 
 "@civ-clone/core-tile-improvement@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-tile-improvement/-/core-tile-improvement-0.1.0.tgz#e64cc15065d956877315beffaf14d57ecca9eccb"
-  integrity sha512-E2HH/HJSDfARsZQOZitWM0UvX+aSS6I6j4vTnERofUKLfZeR9CJNbTesZoF1rpC7J0AFrSPzrH5RW4BKVtpj8Q==
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-tile-improvement/-/core-tile-improvement-0.1.1.tgz#4297ec67e759c80d96b25acf82e6e1658302b8c2"
+  integrity sha512-HF23NsY+MB7yKq9h/6sOr/vUCuTbIwFtYCS6HWN/s61U7/Oc9DykjFHgJIHsFSwFtnzTSfN4nz/wGH00VhUsxw==
   dependencies:
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-player" "^0.1.0"
@@ -1055,9 +1062,9 @@
     "@civ-clone/core-yield" "^0.1.0"
 
 "@civ-clone/core-unit-improvement@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-unit-improvement/-/core-unit-improvement-0.1.0.tgz#cb044ed2158b8cee21b9b24a8874305b2bfd4611"
-  integrity sha512-yuaNzdiT113LX6VmMs+gnWCKub3m9T4E2ViYfNqhywOCzv/JN49RwPqnmnSHwH3XBF5XU6kyr3e+Pu2OVPZD6g==
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-unit-improvement/-/core-unit-improvement-0.1.1.tgz#cb70ee1d08c1924e54b45060fb7c049df92cf724"
+  integrity sha512-f/Fy1MInjPtWrufOWtVAnUZqOMfs8YeYkXDaUWe0WQNR7Ro7u04tcMRccrzkEVtfqHKpzBUOOe3tBupYMNZTIA==
   dependencies:
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-registry" "^0.1.0"
@@ -1072,9 +1079,9 @@
     "@civ-clone/core-unit" "^0.1.0"
 
 "@civ-clone/core-unit@^0.1.0":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-unit/-/core-unit-0.1.4.tgz#d9e592a116b1a653f158b2548b8c34fa2549d7c4"
-  integrity sha512-HYF+4kiaHABZRy5Sed0wfJkPVHAgRfFTHYM+8gd/ZjVIsN5D8t0f3T8uARu6fsTS0ppL+dsE4eeuxbtOk6oKZw==
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-unit/-/core-unit-0.1.6.tgz#f60b2254c63ecd0c60066c9d1544542eaee5d48c"
+  integrity sha512-XYmZMVHUyHdgi/8X6QyLbyyGcZZ/C6k8LiokPatsqFZwmuIoMypEqtjvh7NFLHXTN3pGmDw05YxpF+Cty4PmRQ==
   dependencies:
     "@civ-clone/core-city" "^0.1.0"
     "@civ-clone/core-data-object" "^0.1.0"
@@ -1086,18 +1093,18 @@
     "@civ-clone/core-yield" "^0.1.0"
 
 "@civ-clone/core-world-generator@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-world-generator/-/core-world-generator-0.1.0.tgz#63d800f5b8396e6255b516ab0f365f2a388baef0"
-  integrity sha512-bz8G8n1XMp6yOyfRkTf5BN6/VgXdZZKL0V40VcmKJXDuzrMbbJGK3enQxOnoq3156DYv2ya3RC9ITGMAdqpnOg==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-world-generator/-/core-world-generator-0.1.2.tgz#e718aafcfca780ca91769a279cd1e4c1f4356b16"
+  integrity sha512-BINMMUpuJZNogwHFcJ6osMe+azJ6uFiGmcTK3ZdfB1QVz95fkSDl6Bf3/PiGpbRxB+MuIbE+l4WytTtrdC+enA==
   dependencies:
     "@civ-clone/core-registry" "^0.1.0"
     "@civ-clone/core-rule" "^0.1.0"
     "@civ-clone/core-terrain" "^0.1.0"
 
 "@civ-clone/core-world@^0.1.0":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-world/-/core-world-0.1.3.tgz#f7b34548a6c60b5f1810c14099f4e5a94e48d331"
-  integrity sha512-QYkhqUH1EEI1W4n0/D7e3+W0inOg5DhEd0ZosqiHpkXNd+kaQ4iXMkVqBdaAEdJCcOmt0gPEQxMyJ3qCoh1ErA==
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-world/-/core-world-0.1.5.tgz#ba9fa1c7764e8797df7f8884ccbe7a905ea50fba"
+  integrity sha512-uhc0PtUcHUbdm6DcfYhQcEFCubYpRvp1fboZiARb4TrFiqMJ8LoY1cUX65DOKIO6lo4XJeKCFRs8/1p8cz693A==
   dependencies:
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-player" "^0.1.0"
@@ -1129,9 +1136,9 @@
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
 "@types/node@*", "@types/node@^14.11.2":
-  version "14.14.30"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.30.tgz#7d5162eec085ba34f8cb9011e9ba12119f76f961"
-  integrity sha512-gUWhy8s45fQp4PqqKecsnOkdW0kt1IaKjgOIR3HPokkzTmQj9ji2wWFID5THu1MKrtO+d4s2lVrlEhXUsPXSvg==
+  version "14.14.31"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.31.tgz#72286bd33d137aa0d152d47ec7c1762563d34055"
+  integrity sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g==
 
 balanced-match@^1.0.0:
   version "1.0.0"
@@ -1206,9 +1213,9 @@ prettier@^2.1.2:
   integrity sha512-PqyhM2yCjg/oKkFPtTGUojv7gnZAoG80ttl45O6x2Ug/rMJw4wcc9k6aaf2hibP7BGVCCM33gZoGjyvt9mm16Q==
 
 typescript@^4.0.3:
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.5.tgz#123a3b214aaff3be32926f0d8f1f6e704eb89a72"
-  integrity sha512-6OSu9PTIzmn9TCDiovULTnET6BgXtDYL4Gg4szY+cGsc3JP1dQL8qvE8kShTRx1NIw4Q9IBHlwODjkjWEtMUyA==
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.2.tgz#1450f020618f872db0ea17317d16d8da8ddb8c4c"
+  integrity sha512-tbb+NVrLfnsJy3M59lsDgrzWIflR4d4TIUjz+heUnHZwdF7YsrMTKoRERiIvI2lvBG95dfpLxB21WZhys1bgaQ==
 
 ulid@^2.3.0:
   version "2.3.0"

@@ -20,6 +20,10 @@ import {
   PlayerWorldRegistry,
   instance as playerWorldRegistryInstance,
 } from '@civ-clone/core-player-world/PlayerWorldRegistry';
+import {
+  YieldRegistry,
+  instance as yieldRegistryInstance,
+} from '@civ-clone/core-yield/YieldRegistry';
 import Built from '@civ-clone/core-world/Rules/Built';
 import Civilization from '@civ-clone/core-civilization/Civilization';
 import Client from '@civ-clone/core-civ-client/Client';
@@ -29,10 +33,8 @@ import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
 import Settlers from '@civ-clone/base-unit-settlers/Settlers';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import Tile from '@civ-clone/core-world/Tile';
+import { Worker } from 'worker_threads';
 import World from '@civ-clone/core-world/World';
-import YieldRegistry, {
-  instance as yieldRegistryInstance,
-} from '@civ-clone/core-yield/YieldRegistry';
 
 export const getRules: (
   civilizationRegistry?: CivilizationRegistry,
@@ -104,62 +106,135 @@ export const getRules: (
 
       const numberOfPlayers = engine.option('players', 5),
         usedStartSquares: Tile[] = [],
-        [player] = playerRegistry.entries();
+        [player] = playerRegistry.entries(),
+        worker = new Worker(__dirname + '/sortStartTiles.js', {
+          workerData: {
+            numberOfRequiredTiles: numberOfPlayers * 20,
+            // This still takes a little while to process, but doesn't lock the main thread for as long...
+            tiles: world
+              .entries()
+              .filter((tile: Tile) => tile.isLand())
+              .map((tile: Tile) => ({
+                x: tile.x(),
+                y: tile.y(),
+                score: areaScore(tile, player),
+              })),
+          },
+        });
+
+      // worker.on('error', (error) => reject(error));
+      // worker.on('messageerror', (error) => reject(error));
 
       // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
       //  meet the criteria of having a distance of >4...
-      let startingSquares = world.filter((tile: Tile): boolean =>
-        [Grassland, Plains, River].some(
-          (TerrainType: typeof Terrain) => tile.terrain() instanceof TerrainType
-        )
-      );
+      worker.on('message', (startSquares: { x: number; y: number }[]) => {
+        const startingSquares = startSquares.map(
+          ({ x, y }): Tile => world.get(x, y)
+        );
+
+        engine.emit('world:start-tiles', startingSquares);
+
+        // TODO: this needs to be setting up right clients for each player
+        (clientRegistry.entries() as Client[]).forEach(
+          (client: Client): void => {
+            const player = client.player();
+
+            client.chooseCivilization(civilizationRegistry.entries());
+
+            civilizationRegistry.unregister(
+              player.civilization().constructor as typeof Civilization
+            );
+
+            // TODO: configurable/Rule?
+            startingSquares
+              .filter((tile: Tile): boolean =>
+                usedStartSquares.some(
+                  (startSquare: Tile): boolean =>
+                    startSquare.distanceFrom(tile) <= 4
+                )
+              )
+              .forEach((tile) =>
+                startingSquares.splice(startingSquares.indexOf(tile), 1)
+              );
+
+            const startingSquare =
+              startingSquares[
+                Math.floor(startingSquares.length * randomNumberGenerator())
+              ];
+
+            if (!startingSquare) {
+              throw new TypeError('Not enough `startingSquare`s.');
+            }
+
+            usedStartSquares.push(startingSquare);
+
+            // TODO: have this `Rule` controlled
+            new Settlers(null, player, startingSquare);
+
+            // ensure surrounding tiles are visible
+            startingSquare.getSurroundingArea().forEach((tile: Tile): void => {
+              engine.emit('tile:seen', tile, player);
+            });
+          }
+        );
+
+        engine.emit('game:start');
+      });
+
+      // // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
+      // //  meet the criteria of having a distance of >4...
+      // let startingSquares = world.filter((tile: Tile): boolean =>
+      //   [Grassland, Plains, River].some(
+      //     (TerrainType: typeof Terrain) => tile.terrain() instanceof TerrainType
+      //   )
+      // );
       // .sort(
       //   // (a: Tile, b: Tile): number =>
       //   //   areaScore(b, player) - areaScore(a, player)
       // )
       // .slice(0, numberOfPlayers * 20);
-
-      engine.emit('world:start-tiles', startingSquares);
-
-      // TODO: this needs to be setting up right clients for each player
-      (clientRegistry.entries() as Client[]).forEach((client: Client): void => {
-        const player = client.player();
-
-        client.chooseCivilization(civilizationRegistry.entries());
-
-        civilizationRegistry.unregister(
-          player.civilization().constructor as typeof Civilization
-        );
-
-        // TODO: configurable/Rule
-        startingSquares = startingSquares.filter((tile: Tile): boolean =>
-          usedStartSquares.every(
-            (startSquare: Tile): boolean => startSquare.distanceFrom(tile) > 4
-          )
-        );
-
-        const startingSquare =
-          startingSquares[
-            Math.floor(startingSquares.length * randomNumberGenerator())
-          ];
-
-        if (!startingSquare) {
-          throw new TypeError(
-            `base-player/Events/World/built: startingSquare is '${startingSquare}'.`
-          );
-        }
-
-        usedStartSquares.push(startingSquare);
-
-        new Settlers(null, player, startingSquare);
-
-        // ensure surrounding tiles are visible
-        startingSquare.getSurroundingArea().forEach((tile: Tile): void => {
-          engine.emit('tile:seen', tile, player);
-        });
-      });
-
-      engine.emit('game:start');
+      //
+      // engine.emit('world:start-tiles', startingSquares);
+      //
+      // // TODO: this needs to be setting up right clients for each player
+      // (clientRegistry.entries() as Client[]).forEach((client: Client): void => {
+      //   const player = client.player();
+      //
+      //   client.chooseCivilization(civilizationRegistry.entries());
+      //
+      //   civilizationRegistry.unregister(
+      //     player.civilization().constructor as typeof Civilization
+      //   );
+      //
+      //   // TODO: configurable/Rule
+      //   startingSquares = startingSquares.filter((tile: Tile): boolean =>
+      //     usedStartSquares.every(
+      //       (startSquare: Tile): boolean => startSquare.distanceFrom(tile) > 4
+      //     )
+      //   );
+      //
+      //   const startingSquare =
+      //     startingSquares[
+      //       Math.floor(startingSquares.length * randomNumberGenerator())
+      //     ];
+      //
+      //   if (!startingSquare) {
+      //     throw new TypeError(
+      //       `base-player/Events/World/built: startingSquare is '${startingSquare}'.`
+      //     );
+      //   }
+      //
+      //   usedStartSquares.push(startingSquare);
+      //
+      //   new Settlers(null, player, startingSquare);
+      //
+      //   // ensure surrounding tiles are visible
+      //   startingSquare.getSurroundingArea().forEach((tile: Tile): void => {
+      //     engine.emit('tile:seen', tile, player);
+      //   });
+      // });
+      //
+      // engine.emit('game:start');
     })
   ),
   new Built(
