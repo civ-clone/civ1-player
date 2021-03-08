@@ -6,6 +6,7 @@ import worldBuilt from './Rules/World/built';
 // import turnStart from './Rules/Player/turn-start';
 // import turnEnd from './Rules/Player/turn-end';
 import visibility from './Rules/Unit/visibility';
+import visibilityChanged from './Rules/Player/visibility-changed';
 
 ruleRegistryInstance.register(
   ...playerAdded(),
@@ -17,5 +18,6 @@ ruleRegistryInstance.register(
   // ...turnEnd(),
   // ...turnStart()
 
-  ...visibility()
+  ...visibility(),
+  ...visibilityChanged()
 );

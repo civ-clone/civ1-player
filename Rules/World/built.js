@@ -37,10 +37,10 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
             return areaCache.get(tile);
         };
         engine.emit('world:generate-start-tiles');
-        console.log('getting tiles');
         const numberOfPlayers = engine.option('players', 5), usedStartSquares = [], [player] = playerRegistry.entries(), worker = new worker_threads_1.Worker(__dirname + '/sortStartTiles.js', {
             workerData: {
                 numberOfRequiredTiles: numberOfPlayers * 20,
+                // This still takes a little while to process, but doesn't lock the main thread for as long...
                 tiles: world
                     .entries()
                     .filter((tile) => tile.isLand())
@@ -49,17 +49,14 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
                     y: tile.y(),
                     score: areaScore(tile, player),
                 })),
-                // worldData: world.toPlainObject(),
             },
         });
-        console.log('tiles sent');
         // worker.on('error', (error) => reject(error));
         // worker.on('messageerror', (error) => reject(error));
         // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
         //  meet the criteria of having a distance of >4...
         worker.on('message', (startSquares) => {
             const startingSquares = startSquares.map(({ x, y }) => world.get(x, y));
-            console.log(startSquares.length + ' startSquares found');
             engine.emit('world:start-tiles', startingSquares);
             // TODO: this needs to be setting up right clients for each player
             clientRegistry.entries().forEach((client) => {
