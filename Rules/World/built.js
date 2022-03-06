@@ -59,9 +59,10 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
             const startingSquares = startSquares.map(({ x, y }) => world.get(x, y));
             engine.emit('world:start-tiles', startingSquares);
             // TODO: this needs to be setting up right clients for each player
-            clientRegistry.entries().forEach((client) => {
+            clientRegistry.entries()
+                .reduce((promise, client) => promise.then(async () => {
                 const player = client.player();
-                client.chooseCivilization(civilizationRegistry.entries());
+                await client.chooseCivilization(civilizationRegistry.entries());
                 civilizationRegistry.unregister(player.civilization().constructor);
                 // TODO: configurable/Rule?
                 startingSquares
@@ -75,11 +76,13 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
                 // TODO: have this `Rule` controlled
                 new Settlers_1.default(null, player, startingSquare);
                 // ensure surrounding tiles are visible
-                startingSquare.getSurroundingArea().forEach((tile) => {
+                startingSquare
+                    .getSurroundingArea()
+                    .forEach((tile) => {
                     engine.emit('tile:seen', tile, player);
                 });
-            });
-            engine.emit('game:start');
+            }), Promise.resolve())
+                .then(() => engine.emit('game:start'));
         });
         // // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
         // //  meet the criteria of having a distance of >4...

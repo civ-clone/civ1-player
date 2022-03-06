@@ -135,50 +135,54 @@ export const getRules: (
         engine.emit('world:start-tiles', startingSquares);
 
         // TODO: this needs to be setting up right clients for each player
-        (clientRegistry.entries() as Client[]).forEach(
-          (client: Client): void => {
-            const player = client.player();
+        (clientRegistry.entries() as Client[])
+          .reduce(
+            (promise: Promise<void>, client: Client): Promise<void> =>
+              promise.then(async () => {
+                const player = client.player();
 
-            client.chooseCivilization(civilizationRegistry.entries());
+                await client.chooseCivilization(civilizationRegistry.entries());
 
-            civilizationRegistry.unregister(
-              player.civilization().constructor as typeof Civilization
-            );
+                civilizationRegistry.unregister(
+                  player.civilization().constructor as typeof Civilization
+                );
 
-            // TODO: configurable/Rule?
-            startingSquares
-              .filter((tile: Tile): boolean =>
-                usedStartSquares.some(
-                  (startSquare: Tile): boolean =>
-                    startSquare.distanceFrom(tile) <= 4
-                )
-              )
-              .forEach((tile) =>
-                startingSquares.splice(startingSquares.indexOf(tile), 1)
-              );
+                // TODO: configurable/Rule?
+                startingSquares
+                  .filter((tile: Tile): boolean =>
+                    usedStartSquares.some(
+                      (startSquare: Tile): boolean =>
+                        startSquare.distanceFrom(tile) <= 4
+                    )
+                  )
+                  .forEach((tile) =>
+                    startingSquares.splice(startingSquares.indexOf(tile), 1)
+                  );
 
-            const startingSquare =
-              startingSquares[
-                Math.floor(startingSquares.length * randomNumberGenerator())
-              ];
+                const startingSquare =
+                  startingSquares[
+                    Math.floor(startingSquares.length * randomNumberGenerator())
+                  ];
 
-            if (!startingSquare) {
-              throw new TypeError('Not enough `startingSquare`s.');
-            }
+                if (!startingSquare) {
+                  throw new TypeError('Not enough `startingSquare`s.');
+                }
 
-            usedStartSquares.push(startingSquare);
+                usedStartSquares.push(startingSquare);
 
-            // TODO: have this `Rule` controlled
-            new Settlers(null, player, startingSquare);
+                // TODO: have this `Rule` controlled
+                new Settlers(null, player, startingSquare);
 
-            // ensure surrounding tiles are visible
-            startingSquare.getSurroundingArea().forEach((tile: Tile): void => {
-              engine.emit('tile:seen', tile, player);
-            });
-          }
-        );
-
-        engine.emit('game:start');
+                // ensure surrounding tiles are visible
+                startingSquare
+                  .getSurroundingArea()
+                  .forEach((tile: Tile): void => {
+                    engine.emit('tile:seen', tile, player);
+                  });
+              }),
+            Promise.resolve()
+          )
+          .then(() => engine.emit('game:start'));
       });
 
       // // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
@@ -187,7 +191,7 @@ export const getRules: (
       //   [Grassland, Plains, River].some(
       //     (TerrainType: typeof Terrain) => tile.terrain() instanceof TerrainType
       //   )
-      // );
+      // );x
       // .sort(
       //   // (a: Tile, b: Tile): number =>
       //   //   areaScore(b, player) - areaScore(a, player)
