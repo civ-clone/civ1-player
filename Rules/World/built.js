@@ -90,7 +90,7 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
         //   [Grassland, Plains, River].some(
         //     (TerrainType: typeof Terrain) => tile.terrain() instanceof TerrainType
         //   )
-        // );
+        // );x
         // .sort(
         //   // (a: Tile, b: Tile): number =>
         //   //   areaScore(b, player) - areaScore(a, player)

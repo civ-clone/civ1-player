@@ -22,11 +22,13 @@ export const getEvents: (
 
       const [nextPlayer] = currentPlayerRegistry.entries();
 
-      if (nextPlayer) {
-        engine.emit('player:turn-start', nextPlayer);
-      } else {
+      if (!nextPlayer) {
         engine.emit('turn:end');
+
+        return;
       }
+
+      engine.emit('player:turn-start', nextPlayer);
     },
   ],
 ];

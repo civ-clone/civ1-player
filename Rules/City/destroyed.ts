@@ -15,6 +15,7 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Destroyed from '@civ-clone/core-city/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
 import Rule from '@civ-clone/core-rule/Rule';
+import Player from '@civ-clone/core-player/Player';
 
 export const getRules: (
   cityRegistry?: CityRegistry,
@@ -27,11 +28,16 @@ export const getRules: (
 ): Destroyed[] => [
   new Rule(
     new Criterion(
-      (city: City) => cityRegistry.getByPlayer(city.player()).length === 0
+      (destroyedCity: City, player: Player | null): boolean =>
+        cityRegistry
+          .getByPlayer(destroyedCity.player())
+          .filter((city: City) => city !== destroyedCity).length === 0
       // TODO: check for "total annihilation" setting and check number of units
-      // && unitRegistry.getByPlayer(unit.player()).length === 0
+      // && unitRegistry.getByPlayer(destroyedCity.player()).length === 0
     ),
-    new Effect((city: City) => engine.emit('player:destroyed', city.player()))
+    new Effect((city: City, player: Player | null) =>
+      engine.emit('player:defeated', city.player(), player)
+    )
   ),
 ];
 

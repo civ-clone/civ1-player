@@ -9,12 +9,11 @@ const getEvents = (currentPlayerRegistry = CurrentPlayerRegistry_1.instance, eng
         (player) => {
             currentPlayerRegistry.unregister(player);
             const [nextPlayer] = currentPlayerRegistry.entries();
-            if (nextPlayer) {
-                engine.emit('player:turn-start', nextPlayer);
-            }
-            else {
+            if (!nextPlayer) {
                 engine.emit('turn:end');
+                return;
             }
+            engine.emit('player:turn-start', nextPlayer);
         },
     ],
 ];

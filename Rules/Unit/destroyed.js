@@ -11,7 +11,7 @@ const getRules = (cityRegistry = CityRegistry_1.instance, engine = Engine_1.inst
     new Rule_1.default(new Criterion_1.default((unit) => cityRegistry.getByPlayer(unit.player()).length === 0
     // TODO: check for "total annihilation" setting and check number of units
     // && unitRegistry.getByPlayer(unit.player()).length === 0
-    ), new Effect_1.default((unit) => engine.emit('player:destroyed', unit.player()))),
+    ), new Effect_1.default((unit) => engine.emit('player:defeated', unit.player()))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

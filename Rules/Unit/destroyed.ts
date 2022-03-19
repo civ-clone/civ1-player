@@ -31,7 +31,7 @@ export const getRules: (
       // TODO: check for "total annihilation" setting and check number of units
       // && unitRegistry.getByPlayer(unit.player()).length === 0
     ),
-    new Effect((unit: Unit) => engine.emit('player:destroyed', unit.player()))
+    new Effect((unit: Unit) => engine.emit('player:defeated', unit.player()))
   ),
 ];
 
