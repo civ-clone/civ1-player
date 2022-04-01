@@ -18,9 +18,11 @@ export const getRules: (
       (tile: Tile, player: Player) =>
         !playerWorldRegistry.getByPlayer(player).includes(tile)
     ),
-    new Effect((tile: Tile, player: Player) =>
-      playerWorldRegistry.getByPlayer(player).register(tile)
-    )
+    new Effect((tile: Tile, player: Player) => {
+      tile.clearYieldCache(player);
+
+      playerWorldRegistry.getByPlayer(player).register(tile);
+    })
   ),
 ];
 

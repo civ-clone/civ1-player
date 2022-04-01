@@ -30,6 +30,7 @@ import {
   instance as unitRegistryInstance,
   UnitRegistry,
 } from '@civ-clone/core-unit/UnitRegistry';
+import { Food, Production, Trade } from '@civ-clone/civ1-world/Yields';
 
 export const getRules: (
   ruleRegistry?: RuleRegistry,
@@ -46,34 +47,47 @@ export const getRules: (
 ): TurnStart[] => [
   new TurnStart(
     new Effect((player: Player): void => {
-      clientRegistry
-        .getByPlayer(player)
-        .takeTurn()
-        .then((): void => {
-          ruleRegistry.process(TurnEnd, player);
-        });
-    })
-  ),
-  new TurnStart(
-    new Effect((player: Player): void => {
       const rules = (ruleRegistry as IProcessYieldRegistry).get(ProcessYield);
 
       // process cities first in case units are created
-      cityRegistry
-        .getByPlayer(player)
-        .forEach((city: City): void =>
-          city
-            .yields()
-            .forEach((cityYield: Yield): void =>
-              rules
-                .filter((rule: ProcessYield): boolean =>
-                  rule.validate(cityYield, city)
-                )
-                .forEach((rule: ProcessYield): void =>
-                  rule.process(cityYield, city)
-                )
+      cityRegistry.getByPlayer(player).forEach((city: City): void => {
+        const food = new Food(0, 'consolidated'),
+          production = new Production(0, 'consolidated'),
+          trade = new Trade(0, 'consolidated'),
+          cityYields: Yield[] = [food, production, trade];
+
+        city.yields().forEach((cityYield) => {
+          if (cityYield instanceof Food) {
+            food.add(cityYield);
+
+            return;
+          }
+
+          if (cityYield instanceof Production) {
+            production.add(cityYield);
+
+            return;
+          }
+
+          if (cityYield instanceof Trade) {
+            trade.add(cityYield);
+
+            return;
+          }
+
+          cityYields.push(cityYield);
+        });
+
+        cityYields.forEach((cityYield: Yield) =>
+          rules
+            .filter((rule: ProcessYield): boolean =>
+              rule.validate(cityYield, city, cityYields)
+            )
+            .forEach((rule: ProcessYield): void =>
+              rule.process(cityYield, city, cityYields)
             )
         );
+      });
     })
   ),
 
@@ -98,6 +112,16 @@ export const getRules: (
         unit.setWaiting(false);
       })
     )
+  ),
+  new TurnStart(
+    new Effect((player: Player): void => {
+      clientRegistry
+        .getByPlayer(player)
+        .takeTurn()
+        .then((): void => {
+          ruleRegistry.process(TurnEnd, player);
+        });
+    })
   ),
 ];
 

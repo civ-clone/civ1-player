@@ -8,13 +8,14 @@ const added_1 = require("./Rules/Player/added");
 // import playerTurnEnd from './Rules/Player/turn-end';
 // import playerTurnStart from './Rules/Player/turn-start';
 const visibility_changed_1 = require("./Rules/Player/visibility-changed");
+const built_1 = require("./Rules/TileImprovement/built");
 const created_1 = require("./Rules/Unit/created");
 const destroyed_2 = require("./Rules/Unit/destroyed");
 const visibility_1 = require("./Rules/Unit/visibility");
-const built_1 = require("./Rules/World/built");
+const built_2 = require("./Rules/World/built");
 RuleRegistry_1.instance.register(...(0, captured_1.default)(), ...(0, destroyed_1.default)(), ...(0, action_1.default)(), ...(0, added_1.default)(), 
 // these are problematic so we need to stick to events for now
 // ...playerTurnEnd(),
 // ...playerTurnStart()
-...(0, visibility_changed_1.default)(), ...(0, created_1.default)(), ...(0, destroyed_2.default)(), ...(0, visibility_1.default)(), ...(0, built_1.default)());
+...(0, visibility_changed_1.default)(), ...(0, built_1.default)(), ...(0, created_1.default)(), ...(0, destroyed_2.default)(), ...(0, visibility_1.default)(), ...(0, built_2.default)());
 //# sourceMappingURL=registerRules.js.map

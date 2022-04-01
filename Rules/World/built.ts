@@ -20,10 +20,6 @@ import {
   PlayerWorldRegistry,
   instance as playerWorldRegistryInstance,
 } from '@civ-clone/core-player-world/PlayerWorldRegistry';
-import {
-  YieldRegistry,
-  instance as yieldRegistryInstance,
-} from '@civ-clone/core-yield/YieldRegistry';
 import Built from '@civ-clone/core-world/Rules/Built';
 import Civilization from '@civ-clone/core-civilization/Civilization';
 import Client from '@civ-clone/core-civ-client/Client';
@@ -31,7 +27,6 @@ import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
 import Settlers from '@civ-clone/base-unit-settlers/Settlers';
-import Terrain from '@civ-clone/core-terrain/Terrain';
 import Tile from '@civ-clone/core-world/Tile';
 import { Worker } from 'worker_threads';
 import World from '@civ-clone/core-world/World';
@@ -42,7 +37,6 @@ export const getRules: (
   engine?: Engine,
   playerRegistry?: PlayerRegistry,
   playerWorldRegistry?: PlayerWorldRegistry,
-  yieldRegistry?: YieldRegistry,
   randomNumberGenerator?: () => number
 ) => Built[] = (
   civilizationRegistry: CivilizationRegistry = civilizationRegistryInstance,
@@ -50,7 +44,6 @@ export const getRules: (
   engine: Engine = engineInstance,
   playerRegistry: PlayerRegistry = playerRegistryInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
-  yieldRegistry: YieldRegistry = yieldRegistryInstance,
   randomNumberGenerator: () => number = (): number => Math.random()
 ): Built[] => [
   new Built(
@@ -70,15 +63,11 @@ export const getRules: (
           if (!tileCache.has(tile)) {
             tileCache.set(
               tile,
-              tile.score(
-                player,
-                [
-                  [Food, 4],
-                  [Production, 2],
-                  [Trade, 1],
-                ],
-                yieldRegistry.entries()
-              )
+              tile.score(player, [
+                [Food, 4],
+                [Production, 2],
+                [Trade, 1],
+              ])
             );
           }
 
@@ -113,7 +102,11 @@ export const getRules: (
             // This still takes a little while to process, but doesn't lock the main thread for as long...
             tiles: world
               .entries()
-              .filter((tile: Tile) => tile.isLand())
+              .filter((tile: Tile) =>
+                [Grassland, Plains, River].some(
+                  (TerrainType) => tile.terrain() instanceof TerrainType
+                )
+              )
               .map((tile: Tile) => ({
                 x: tile.x(),
                 y: tile.y(),
