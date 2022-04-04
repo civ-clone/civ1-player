@@ -21,8 +21,8 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
         const tileCache = new Map(), areaCache = new Map(), tileScore = (tile, player) => {
             if (!tileCache.has(tile)) {
                 tileCache.set(tile, tile.score(player, [
-                    [Yields_1.Food, 4],
-                    [Yields_1.Production, 2],
+                    [Yields_1.Food, 8],
+                    [Yields_1.Production, 3],
                     [Yields_1.Trade, 1],
                 ]));
             }

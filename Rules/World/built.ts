@@ -64,8 +64,8 @@ export const getRules: (
             tileCache.set(
               tile,
               tile.score(player, [
-                [Food, 4],
-                [Production, 2],
+                [Food, 8],
+                [Production, 3],
                 [Trade, 1],
               ])
             );
