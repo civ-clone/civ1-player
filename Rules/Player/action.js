@@ -13,7 +13,7 @@ const endOfTurnRule = new Action_1.default(new Criterion_1.default((player) => {
     const otherActions = player.mandatoryActions();
     endOfTurnRule.enable();
     return otherActions.length === 0;
-}), new Effect_1.default(() => [new EndTurn_1.default(null)]), new Priority_1.default(9001) // `Low` is probably enough in most cases, but just to make sure, it's over 9000
+}), new Effect_1.default((player) => [new EndTurn_1.default(player, null)]), new Priority_1.default(9001) // `Low` is probably enough in most cases, but just to make sure, it's over 9000
 );
 const getRules = () => [endOfTurnRule];
 exports.getRules = getRules;

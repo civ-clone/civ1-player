@@ -17,7 +17,7 @@ const endOfTurnRule = new Action(
 
     return otherActions.length === 0;
   }),
-  new Effect(() => [new EndTurn(null)]),
+  new Effect((player: Player) => [new EndTurn(player, null)]),
   new Priority(9001) // `Low` is probably enough in most cases, but just to make sure, it's over 9000
 );
 
