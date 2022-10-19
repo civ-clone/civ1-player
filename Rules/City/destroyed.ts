@@ -3,40 +3,35 @@ import {
   instance as cityRegistryInstance,
 } from '@civ-clone/core-city/CityRegistry';
 import {
-  Engine,
-  instance as engineInstance,
-} from '@civ-clone/core-engine/Engine';
-import {
-  UnitRegistry,
-  instance as unitRegistryInstance,
-} from '@civ-clone/core-unit/UnitRegistry';
+  RuleRegistry,
+  instance as ruleRegistryInstance,
+} from '@civ-clone/core-rule/RuleRegistry';
 import City from '@civ-clone/core-city/City';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Defeated from '@civ-clone/core-player/Rules/Defeated';
 import Destroyed from '@civ-clone/core-city/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
-import Rule from '@civ-clone/core-rule/Rule';
 import Player from '@civ-clone/core-player/Player';
+import Rule from '@civ-clone/core-rule/Rule';
 
 export const getRules: (
   cityRegistry?: CityRegistry,
-  engine?: Engine,
-  unitRegistry?: UnitRegistry
+  ruleRegistry?: RuleRegistry
 ) => Destroyed[] = (
   cityRegistry: CityRegistry = cityRegistryInstance,
-  engine: Engine = engineInstance,
-  unitRegistry: UnitRegistry = unitRegistryInstance
+  ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Destroyed[] => [
   new Rule(
     new Criterion(
-      (destroyedCity: City, player: Player | null): boolean =>
+      (destroyedCity: City, destroyingPlayer: Player | null): boolean =>
         cityRegistry
           .getByPlayer(destroyedCity.player())
           .filter((city: City) => city !== destroyedCity).length === 0
       // TODO: check for "total annihilation" setting and check number of units
       // && unitRegistry.getByPlayer(destroyedCity.player()).length === 0
     ),
-    new Effect((city: City, player: Player | null) =>
-      engine.emit('player:defeated', city.player(), player)
+    new Effect((city: City, destroyingPlayer: Player | null) =>
+      ruleRegistry.process(Defeated, city.player(), destroyingPlayer)
     )
   ),
 ];

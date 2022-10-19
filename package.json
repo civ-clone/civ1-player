@@ -1,6 +1,7 @@
 {
   "name": "@civ-clone/civ1-player",
   "version": "0.1.0",
+  "main": "index.js",
   "repository": "git@github.com:civ-clone/civ1-player.git",
   "keywords": [
     "typescript",

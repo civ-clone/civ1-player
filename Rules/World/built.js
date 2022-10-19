@@ -51,8 +51,8 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
                 })),
             },
         });
-        // worker.on('error', (error) => reject(error));
-        // worker.on('messageerror', (error) => reject(error));
+        worker.on('error', (error) => console.error(error));
+        worker.on('messageerror', (error) => console.error(error));
         // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
         //  meet the criteria of having a distance of >4...
         worker.on('message', (startSquares) => {
@@ -63,7 +63,7 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
                 .reduce((promise, client) => promise.then(async () => {
                 const player = client.player();
                 await client.chooseCivilization(civilizationRegistry.entries());
-                civilizationRegistry.unregister(player.civilization().constructor);
+                civilizationRegistry.unregister(player.civilization().sourceClass());
                 // TODO: configurable/Rule?
                 startingSquares
                     .filter((tile) => usedStartSquares.some((startSquare) => startSquare.distanceFrom(tile) <= 4))
@@ -75,69 +75,9 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
                 usedStartSquares.push(startingSquare);
                 // TODO: have this `Rule` controlled
                 new Settlers_1.default(null, player, startingSquare);
-                // ensure surrounding tiles are visible
-                startingSquare
-                    .getSurroundingArea()
-                    .forEach((tile) => {
-                    engine.emit('tile:seen', tile, player);
-                });
             }), Promise.resolve())
                 .then(() => engine.emit('game:start'));
         });
-        // // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
-        // //  meet the criteria of having a distance of >4...
-        // let startingSquares = world.filter((tile: Tile): boolean =>
-        //   [Grassland, Plains, River].some(
-        //     (TerrainType: typeof Terrain) => tile.terrain() instanceof TerrainType
-        //   )
-        // );x
-        // .sort(
-        //   // (a: Tile, b: Tile): number =>
-        //   //   areaScore(b, player) - areaScore(a, player)
-        // )
-        // .slice(0, numberOfPlayers * 20);
-        //
-        // engine.emit('world:start-tiles', startingSquares);
-        //
-        // // TODO: this needs to be setting up right clients for each player
-        // (clientRegistry.entries() as Client[]).forEach((client: Client): void => {
-        //   const player = client.player();
-        //
-        //   client.chooseCivilization(civilizationRegistry.entries());
-        //
-        //   civilizationRegistry.unregister(
-        //     player.civilization().constructor as typeof Civilization
-        //   );
-        //
-        //   // TODO: configurable/Rule
-        //   startingSquares = startingSquares.filter((tile: Tile): boolean =>
-        //     usedStartSquares.every(
-        //       (startSquare: Tile): boolean => startSquare.distanceFrom(tile) > 4
-        //     )
-        //   );
-        //
-        //   const startingSquare =
-        //     startingSquares[
-        //       Math.floor(startingSquares.length * randomNumberGenerator())
-        //     ];
-        //
-        //   if (!startingSquare) {
-        //     throw new TypeError(
-        //       `base-player/Events/World/built: startingSquare is '${startingSquare}'.`
-        //     );
-        //   }
-        //
-        //   usedStartSquares.push(startingSquare);
-        //
-        //   new Settlers(null, player, startingSquare);
-        //
-        //   // ensure surrounding tiles are visible
-        //   startingSquare.getSurroundingArea().forEach((tile: Tile): void => {
-        //     engine.emit('tile:seen', tile, player);
-        //   });
-        // });
-        //
-        // engine.emit('game:start');
     })),
     new Built_1.default(new Effect_1.default((world) => {
         engine.emit('world:built', world);

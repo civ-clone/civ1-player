@@ -1,8 +1,8 @@
 import { CityRegistry } from '@civ-clone/core-city/CityRegistry';
-import { Engine } from '@civ-clone/core-engine/Engine';
+import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import Captured from '@civ-clone/core-city/Rules/Captured';
 export declare const getRules: (
   cityRegistry?: CityRegistry,
-  engine?: Engine
+  ruleRegistry?: RuleRegistry
 ) => Captured[];
 export default getRules;

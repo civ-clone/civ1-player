@@ -10,18 +10,12 @@ import {
   PlayerRegistry,
   instance as playerRegistryInstance,
 } from '@civ-clone/core-player/PlayerRegistry';
-import {
-  RuleRegistry,
-  instance as ruleRegistryInstance,
-} from '@civ-clone/core-rule/RuleRegistry';
 
 export const getEvents: (
-  ruleRegistry?: RuleRegistry,
   playerRegistry?: PlayerRegistry,
   currentPlayerRegistry?: CurrentPlayerRegistry,
   engine?: Engine
 ) => [string, () => any][] = (
-  ruleRegistry: RuleRegistry = ruleRegistryInstance,
   playerRegistry: PlayerRegistry = playerRegistryInstance,
   currentPlayerRegistry: CurrentPlayerRegistry = currentPlayerRegistryInstance,
   engine: Engine = engineInstance
