@@ -2,7 +2,6 @@ import {
   CityRegistry,
   instance as cityRegistryInstance,
 } from '@civ-clone/core-city/CityRegistry';
-import { Food, Production, Trade } from '@civ-clone/civ1-world/Yields';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -13,9 +12,12 @@ import {
 } from '@civ-clone/core-unit/UnitRegistry';
 import City from '@civ-clone/core-city/City';
 import Effect from '@civ-clone/core-rule/Effect';
+import Food from '@civ-clone/base-terrain-yield-food/Food';
 import High from '@civ-clone/core-rule/Priorities/High';
 import Player from '@civ-clone/core-player/Player';
 import ProcessYield from '@civ-clone/core-city/Rules/ProcessYield';
+import Production from '@civ-clone/base-terrain-yield-production/Production';
+import Trade from '@civ-clone/base-terrain-yield-trade/Trade';
 import TurnStart from '@civ-clone/core-player/Rules/TurnStart';
 import Unit from '@civ-clone/core-unit/Unit';
 import Yield from '@civ-clone/core-yield/Yield';
@@ -63,15 +65,20 @@ export const getRules: (
 
         const busyAction = unit.busy();
 
-        if (busyAction) {
-          if (!busyAction.validate()) {
-            return;
-          }
-
-          busyAction.process();
+        if (!busyAction) {
+          unit.setActive();
+          unit.setWaiting(false);
 
           return;
         }
+
+        if (!busyAction.validate()) {
+          return;
+        }
+
+        busyAction.process();
+
+        unit.setBusy();
 
         unit.setActive();
         unit.setWaiting(false);

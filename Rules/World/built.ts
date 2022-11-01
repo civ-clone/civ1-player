@@ -10,8 +10,6 @@ import {
   Engine,
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
-import { Food, Production, Trade } from '@civ-clone/civ1-world/Yields';
-import { Grassland, Plains, River } from '@civ-clone/civ1-world/Terrains';
 import {
   PlayerRegistry,
   instance as playerRegistryInstance,
@@ -20,13 +18,23 @@ import {
   PlayerWorldRegistry,
   instance as playerWorldRegistryInstance,
 } from '@civ-clone/core-player-world/PlayerWorldRegistry';
+import {
+  RuleRegistry,
+  instance as ruleRegistryInstance,
+} from '@civ-clone/core-rule/RuleRegistry';
 import Built from '@civ-clone/core-world/Rules/Built';
 import Client from '@civ-clone/core-civ-client/Client';
 import Effect from '@civ-clone/core-rule/Effect';
+import Food from '@civ-clone/base-terrain-yield-food/Food';
+import Grassland from '@civ-clone/base-terrain-grassland/Grassland';
+import Plains from '@civ-clone/base-terrain-plains/Plains';
 import Player from '@civ-clone/core-player/Player';
 import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
+import Production from '@civ-clone/base-terrain-yield-production/Production';
+import River from '@civ-clone/base-terrain-river/River';
 import Settlers from '@civ-clone/base-unit-settlers/Settlers';
 import Tile from '@civ-clone/core-world/Tile';
+import Trade from '@civ-clone/base-terrain-yield-trade/Trade';
 import { Worker } from 'worker_threads';
 import World from '@civ-clone/core-world/World';
 
@@ -36,6 +44,7 @@ export const getRules: (
   engine?: Engine,
   playerRegistry?: PlayerRegistry,
   playerWorldRegistry?: PlayerWorldRegistry,
+  ruleRegistry?: RuleRegistry,
   randomNumberGenerator?: () => number
 ) => Built[] = (
   civilizationRegistry: CivilizationRegistry = civilizationRegistryInstance,
@@ -43,6 +52,7 @@ export const getRules: (
   engine: Engine = engineInstance,
   playerRegistry: PlayerRegistry = playerRegistryInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
+  ruleRegistry: RuleRegistry = ruleRegistryInstance,
   randomNumberGenerator: () => number = (): number => Math.random()
 ): Built[] => [
   new Built(
@@ -58,7 +68,7 @@ export const getRules: (
     new Effect((world: World): void => {
       const tileCache: Map<Tile, number> = new Map(),
         areaCache: Map<Tile, number> = new Map(),
-        tileScore = (tile: Tile, player: Player): number => {
+        tileScore = (tile: Tile, player: Player | null = null): number => {
           if (!tileCache.has(tile)) {
             tileCache.set(
               tile,
@@ -72,7 +82,7 @@ export const getRules: (
 
           return tileCache.get(tile)!;
         },
-        areaScore = (tile: Tile, player: Player): number => {
+        areaScore = (tile: Tile, player: Player | null = null): number => {
           if (!areaCache.has(tile)) {
             areaCache.set(
               tile,
@@ -94,7 +104,6 @@ export const getRules: (
 
       const numberOfPlayers = engine.option('players', 5),
         usedStartSquares: Tile[] = [],
-        [player] = playerRegistry.entries(),
         worker = new Worker(__dirname + '/sortStartTiles.js', {
           workerData: {
             numberOfRequiredTiles: numberOfPlayers * 20,
@@ -109,7 +118,7 @@ export const getRules: (
               .map((tile: Tile) => ({
                 x: tile.x(),
                 y: tile.y(),
-                score: areaScore(tile, player),
+                score: areaScore(tile),
               })),
           },
         });
@@ -163,7 +172,7 @@ export const getRules: (
                 usedStartSquares.push(startingSquare);
 
                 // TODO: have this `Rule` controlled
-                new Settlers(null, player, startingSquare);
+                new Settlers(null, player, startingSquare, ruleRegistry);
               }),
             Promise.resolve()
           )

@@ -21,7 +21,6 @@ export const getRules: (
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Captured[] => [
   new Captured(
-    // TODO: have some `Rule`s that just call `Player#defeated` or something?
     new Criterion(
       (
         capturedCity: City,

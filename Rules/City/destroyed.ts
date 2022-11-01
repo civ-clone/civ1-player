@@ -12,7 +12,6 @@ import Defeated from '@civ-clone/core-player/Rules/Defeated';
 import Destroyed from '@civ-clone/core-city/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
-import Rule from '@civ-clone/core-rule/Rule';
 
 export const getRules: (
   cityRegistry?: CityRegistry,
@@ -21,7 +20,7 @@ export const getRules: (
   cityRegistry: CityRegistry = cityRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Destroyed[] => [
-  new Rule(
+  new Destroyed(
     new Criterion(
       (destroyedCity: City, destroyingPlayer: Player | null): boolean =>
         cityRegistry
