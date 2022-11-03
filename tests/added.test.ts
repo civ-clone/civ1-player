@@ -1,9 +1,9 @@
-import { describe } from 'mocha';
-import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
-import added from '../Rules/Player/added';
+import { expect, spy, use } from 'chai';
 import Engine from '@civ-clone/core-engine/Engine';
 import Player from '@civ-clone/core-player/Player';
-import { expect, spy, use } from 'chai';
+import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
+import added from '../Rules/Player/added';
+import { describe } from 'mocha';
 import * as spies from 'chai-spies';
 
 use(spies);

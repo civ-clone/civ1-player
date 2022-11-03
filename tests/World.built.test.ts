@@ -51,7 +51,8 @@ describe('World.built', () => {
           terrainFeatureRegistry.register(new Shield(terrain));
 
           return terrain;
-        })
+        }),
+        ruleRegistry
       ),
       leaderRegistry = new LeaderRegistry(),
       client = new Client(new Player(ruleRegistry), leaderRegistry, () => 0);
@@ -77,7 +78,7 @@ describe('World.built', () => {
     );
     leaderRegistry.register(Hammurabi);
 
-    world.build(ruleRegistry);
+    world.build();
 
     await worldBuilt;
 

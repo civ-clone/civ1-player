@@ -69,12 +69,12 @@ describe('Player.turn-start', () => {
   it('should trigger checks and completion of `Unit`s that are `Busy`', async (): Promise<void> => {
     const ruleRegistry = new RuleRegistry(),
       unitRegistry = new UnitRegistry(),
-      world = await new World(new FillGenerator(1, 1)).build(ruleRegistry),
+      world = await new World(new FillGenerator(1, 1), ruleRegistry).build(),
       unit = new Unit(null, new Player(), world.get(0, 0), ruleRegistry);
 
     ruleRegistry.register(
       ...turnStart(ruleRegistry, undefined, unitRegistry),
-      ...unitYield(Unit, 1, 1, 1, 1)
+      ...unitYield(Unit)
     );
 
     unitRegistry.register(unit);
@@ -95,7 +95,16 @@ describe('Player.turn-start', () => {
 
     let check = false;
 
-    unit.setBusy(new Busy(new Criterion(() => check)));
+    unit.setBusy(
+      new Busy(
+        new Criterion(() => check),
+        new Effect(() => {
+          unit.setActive();
+          unit.moves().set(unit.movement());
+          unit.setWaiting(false);
+        })
+      )
+    );
 
     expect(unit.busy()?.validate()).false;
 
@@ -106,11 +115,10 @@ describe('Player.turn-start', () => {
 
     check = true;
 
-    expect(unit.busy()?.validate()).true;
-
     ruleRegistry.process(TurnStart, unit.player());
 
     expect(unit.active()).true;
-    expect(unit.busy()).null;
+    expect(unit.moves().value()).equal(unit.movement().value());
+    expect(unit.waiting()).false;
   });
 });

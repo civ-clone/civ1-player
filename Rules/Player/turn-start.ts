@@ -35,6 +35,8 @@ export const getRules: (
   new TurnStart(
     new High(),
     new Effect((player: Player): void => {
+      // This will need to be excluded/replaced/updated if the base yields change, but having a dynamic approach here
+      // causes the wrong values to be processed.
       cityRegistry.getByPlayer(player).forEach((city: City): void => {
         const cityYields = city.yields();
 
@@ -77,11 +79,8 @@ export const getRules: (
         }
 
         busyAction.process();
-
-        unit.setBusy();
-
-        unit.setActive();
-        unit.setWaiting(false);
+        // It's the job of the `DelayedAction` to set the `Unit` as active, otherwise `Action`s that chain `Busy` will
+        // end up being cleared here.
       })
     )
   ),

@@ -14,6 +14,8 @@ const TurnStart_1 = require("@civ-clone/core-player/Rules/TurnStart");
 const reduceYields_1 = require("@civ-clone/core-yield/lib/reduceYields");
 const getRules = (ruleRegistry = RuleRegistry_1.instance, cityRegistry = CityRegistry_1.instance, unitRegistry = UnitRegistry_1.instance) => [
     new TurnStart_1.default(new High_1.default(), new Effect_1.default((player) => {
+        // This will need to be excluded/replaced/updated if the base yields change, but having a dynamic approach here
+        // causes the wrong values to be processed.
         cityRegistry.getByPlayer(player).forEach((city) => {
             const cityYields = city.yields();
             (0, reduceYields_1.reduceYields)(cityYields, Food_1.default, Production_1.default, Trade_1.default)
@@ -40,9 +42,8 @@ const getRules = (ruleRegistry = RuleRegistry_1.instance, cityRegistry = CityReg
             return;
         }
         busyAction.process();
-        unit.setBusy();
-        unit.setActive();
-        unit.setWaiting(false);
+        // It's the job of the `DelayedAction` to set the `Unit` as active, otherwise `Action`s that chain `Busy` will
+        // end up being cleared here.
     }))),
 ];
 exports.getRules = getRules;
