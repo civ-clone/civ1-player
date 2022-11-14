@@ -35,7 +35,6 @@ import River from '@civ-clone/base-terrain-river/River';
 import Settlers from '@civ-clone/base-unit-settlers/Settlers';
 import Tile from '@civ-clone/core-world/Tile';
 import Trade from '@civ-clone/base-terrain-yield-trade/Trade';
-import { Worker } from 'worker_threads';
 import World from '@civ-clone/core-world/World';
 
 export const getRules: (
@@ -104,80 +103,64 @@ export const getRules: (
 
       const numberOfPlayers = engine.option('players', 5),
         usedStartSquares: Tile[] = [],
-        worker = new Worker(__dirname + '/sortStartTiles.js', {
-          workerData: {
-            numberOfRequiredTiles: numberOfPlayers * 20,
-            // This still takes a little while to process, but doesn't lock the main thread for as long...
-            tiles: world
-              .entries()
-              .filter((tile: Tile) =>
-                [Grassland, Plains, River].some(
-                  (TerrainType) => tile.terrain() instanceof TerrainType
+        startingSquares = world
+          .entries()
+          .filter((tile: Tile) =>
+            [Grassland, Plains, River].some(
+              (TerrainType) => tile.terrain() instanceof TerrainType
+            )
+          )
+          .map((tile: Tile) => ({
+            tile,
+            score: areaScore(tile),
+          }))
+          .sort(({ score: scoreA }, { score: scoreB }) => scoreB - scoreA)
+          .map(({ tile }) => tile);
+
+      engine.emit('world:start-tiles', startingSquares);
+
+      // TODO: this needs to be setting up right clients for each player
+      (clientRegistry.entries() as Client[])
+        .reduce(
+          (promise: Promise<void>, client: Client): Promise<void> =>
+            promise.then(async () => {
+              const player = client.player();
+
+              await client.chooseCivilization(civilizationRegistry.entries());
+
+              civilizationRegistry.unregister(
+                player.civilization().sourceClass()
+              );
+
+              // TODO: configurable/Rule?
+              startingSquares
+                .filter((tile: Tile): boolean =>
+                  usedStartSquares.some(
+                    (startSquare: Tile): boolean =>
+                      startSquare.distanceFrom(tile) <= 4
+                  )
                 )
-              )
-              .map((tile: Tile) => ({
-                x: tile.x(),
-                y: tile.y(),
-                score: areaScore(tile),
-              })),
-          },
-        });
-
-      worker.on('error', (error) => console.error(error));
-      worker.on('messageerror', (error) => console.error(error));
-
-      // TODO: this could pick a large cluster of squares all next to each other resulting in a situation where not enough
-      //  meet the criteria of having a distance of >4...
-      worker.on('message', (startSquares: { x: number; y: number }[]) => {
-        const startingSquares = startSquares.map(
-          ({ x, y }): Tile => world.get(x, y)
-        );
-
-        engine.emit('world:start-tiles', startingSquares);
-
-        // TODO: this needs to be setting up right clients for each player
-        (clientRegistry.entries() as Client[])
-          .reduce(
-            (promise: Promise<void>, client: Client): Promise<void> =>
-              promise.then(async () => {
-                const player = client.player();
-
-                await client.chooseCivilization(civilizationRegistry.entries());
-
-                civilizationRegistry.unregister(
-                  player.civilization().sourceClass()
+                .forEach((tile) =>
+                  startingSquares.splice(startingSquares.indexOf(tile), 1)
                 );
 
-                // TODO: configurable/Rule?
-                startingSquares
-                  .filter((tile: Tile): boolean =>
-                    usedStartSquares.some(
-                      (startSquare: Tile): boolean =>
-                        startSquare.distanceFrom(tile) <= 4
-                    )
-                  )
-                  .forEach((tile) =>
-                    startingSquares.splice(startingSquares.indexOf(tile), 1)
-                  );
+              const startingSquare =
+                startingSquares[
+                  Math.floor(startingSquares.length * randomNumberGenerator())
+                ];
 
-                const startingSquare =
-                  startingSquares[
-                    Math.floor(startingSquares.length * randomNumberGenerator())
-                  ];
+              if (!startingSquare) {
+                throw new TypeError('Not enough `startingSquare`s.');
+              }
 
-                if (!startingSquare) {
-                  throw new TypeError('Not enough `startingSquare`s.');
-                }
+              usedStartSquares.push(startingSquare);
 
-                usedStartSquares.push(startingSquare);
-
-                // TODO: have this `Rule` controlled
-                new Settlers(null, player, startingSquare, ruleRegistry);
-              }),
-            Promise.resolve()
-          )
-          .then(() => engine.emit('game:start'));
-      });
+              // TODO: have this `Rule` controlled
+              new Settlers(null, player, startingSquare, ruleRegistry);
+            }),
+          Promise.resolve()
+        )
+        .then(() => engine.emit('game:start'));
     })
   ),
   new Built(
