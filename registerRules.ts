@@ -4,6 +4,7 @@ import { instance as ruleRegistryInstance } from '@civ-clone/core-rule/RuleRegis
 import playerAction from './Rules/Player/action';
 import playerAdded from './Rules/Player/added';
 import playerDefeated from './Rules/Player/defeated';
+import playerSpawn from './Rules/Player/spawn';
 import playerTurnStart from './Rules/Player/turn-start';
 import playerVisibilityChanged from './Rules/Player/visibility-changed';
 import tileImprovementBuilt from './Rules/TileImprovement/built';
@@ -17,6 +18,7 @@ ruleRegistryInstance.register(
   ...playerAction(),
   ...playerAdded(),
   ...playerDefeated(),
+  ...playerSpawn(),
   ...playerTurnStart(),
   ...playerVisibilityChanged(),
   ...tileImprovementBuilt(),

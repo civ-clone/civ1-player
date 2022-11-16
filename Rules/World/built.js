@@ -11,12 +11,13 @@ const Built_1 = require("@civ-clone/core-world/Rules/Built");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Food_1 = require("@civ-clone/base-terrain-yield-food/Food");
 const Grassland_1 = require("@civ-clone/base-terrain-grassland/Grassland");
+const PickStartTile_1 = require("@civ-clone/core-world-generator/Rules/PickStartTile");
 const Plains_1 = require("@civ-clone/base-terrain-plains/Plains");
 const PlayerWorld_1 = require("@civ-clone/core-player-world/PlayerWorld");
 const Production_1 = require("@civ-clone/base-terrain-yield-production/Production");
 const River_1 = require("@civ-clone/base-terrain-river/River");
-const Settlers_1 = require("@civ-clone/base-unit-settlers/Settlers");
 const Trade_1 = require("@civ-clone/base-terrain-yield-trade/Trade");
+const Spawn_1 = require("@civ-clone/core-player/Rules/Spawn");
 const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, clientRegistry = ClientRegistry_1.instance, engine = Engine_1.instance, playerRegistry = PlayerRegistry_1.instance, playerWorldRegistry = PlayerWorldRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, randomNumberGenerator = () => Math.random()) => [
     new Built_1.default(new Effect_1.default((world) => playerRegistry
         .entries()
@@ -41,7 +42,7 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
             return areaCache.get(tile);
         };
         engine.emit('world:generate-start-tiles');
-        const numberOfPlayers = engine.option('players', 5), usedStartSquares = [], startingSquares = world
+        const usedStartSquares = [], startingSquares = world
             .entries()
             .filter((tile) => [Grassland_1.default, Plains_1.default, River_1.default].some((TerrainType) => tile.terrain() instanceof TerrainType))
             .map((tile) => ({
@@ -51,23 +52,17 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
             .sort(({ score: scoreA }, { score: scoreB }) => scoreB - scoreA)
             .map(({ tile }) => tile);
         engine.emit('world:start-tiles', startingSquares);
-        // TODO: this needs to be setting up right clients for each player
         clientRegistry.entries()
             .reduce((promise, client) => promise.then(async () => {
             const player = client.player();
             await client.chooseCivilization(civilizationRegistry.entries());
             civilizationRegistry.unregister(player.civilization().sourceClass());
-            // TODO: configurable/Rule?
-            startingSquares
-                .filter((tile) => usedStartSquares.some((startSquare) => startSquare.distanceFrom(tile) <= 4))
-                .forEach((tile) => startingSquares.splice(startingSquares.indexOf(tile), 1));
-            const startingSquare = startingSquares[Math.floor(startingSquares.length * randomNumberGenerator())];
+            const [startingSquare] = ruleRegistry.process(PickStartTile_1.default, world, player, usedStartSquares);
             if (!startingSquare) {
                 throw new TypeError('Not enough `startingSquare`s.');
             }
             usedStartSquares.push(startingSquare);
-            // TODO: have this `Rule` controlled
-            new Settlers_1.default(null, player, startingSquare, ruleRegistry);
+            ruleRegistry.process(Spawn_1.default, player, startingSquare);
         }), Promise.resolve())
             .then(() => engine.emit('game:start'));
     })),

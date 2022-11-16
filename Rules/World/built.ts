@@ -27,15 +27,16 @@ import Client from '@civ-clone/core-civ-client/Client';
 import Effect from '@civ-clone/core-rule/Effect';
 import Food from '@civ-clone/base-terrain-yield-food/Food';
 import Grassland from '@civ-clone/base-terrain-grassland/Grassland';
+import PickStartTile from '@civ-clone/core-world-generator/Rules/PickStartTile';
 import Plains from '@civ-clone/base-terrain-plains/Plains';
 import Player from '@civ-clone/core-player/Player';
 import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
 import Production from '@civ-clone/base-terrain-yield-production/Production';
 import River from '@civ-clone/base-terrain-river/River';
-import Settlers from '@civ-clone/base-unit-settlers/Settlers';
 import Tile from '@civ-clone/core-world/Tile';
 import Trade from '@civ-clone/base-terrain-yield-trade/Trade';
 import World from '@civ-clone/core-world/World';
+import Spawn from '@civ-clone/core-player/Rules/Spawn';
 
 export const getRules: (
   civilizationRegistry?: CivilizationRegistry,
@@ -101,8 +102,7 @@ export const getRules: (
 
       engine.emit('world:generate-start-tiles');
 
-      const numberOfPlayers = engine.option('players', 5),
-        usedStartSquares: Tile[] = [],
+      const usedStartSquares: Tile[] = [],
         startingSquares = world
           .entries()
           .filter((tile: Tile) =>
@@ -119,7 +119,6 @@ export const getRules: (
 
       engine.emit('world:start-tiles', startingSquares);
 
-      // TODO: this needs to be setting up right clients for each player
       (clientRegistry.entries() as Client[])
         .reduce(
           (promise: Promise<void>, client: Client): Promise<void> =>
@@ -132,22 +131,12 @@ export const getRules: (
                 player.civilization().sourceClass()
               );
 
-              // TODO: configurable/Rule?
-              startingSquares
-                .filter((tile: Tile): boolean =>
-                  usedStartSquares.some(
-                    (startSquare: Tile): boolean =>
-                      startSquare.distanceFrom(tile) <= 4
-                  )
-                )
-                .forEach((tile) =>
-                  startingSquares.splice(startingSquares.indexOf(tile), 1)
-                );
-
-              const startingSquare =
-                startingSquares[
-                  Math.floor(startingSquares.length * randomNumberGenerator())
-                ];
+              const [startingSquare] = ruleRegistry.process(
+                PickStartTile,
+                world,
+                player,
+                usedStartSquares
+              );
 
               if (!startingSquare) {
                 throw new TypeError('Not enough `startingSquare`s.');
@@ -155,8 +144,7 @@ export const getRules: (
 
               usedStartSquares.push(startingSquare);
 
-              // TODO: have this `Rule` controlled
-              new Settlers(null, player, startingSquare, ruleRegistry);
+              ruleRegistry.process(Spawn, player, startingSquare);
             }),
           Promise.resolve()
         )
