@@ -4,7 +4,7 @@ import BaseGenerator, {
   IOptions,
 } from '@civ-clone/simple-world-generator/BaseGenerator';
 import Terrain from '@civ-clone/core-terrain/Terrain';
-declare type GeneratorFunction = (i: number) => Terrain;
+type GeneratorFunction = (i: number) => Terrain;
 export declare class Generator extends BaseGenerator {
   #private;
   constructor(

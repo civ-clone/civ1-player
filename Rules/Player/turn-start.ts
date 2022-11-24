@@ -63,6 +63,10 @@ export const getRules: (
   new TurnStart(
     new Effect((player: Player): void =>
       unitRegistry.getByPlayer(player).forEach((unit: Unit): void => {
+        if (unit.destroyed()) {
+          return;
+        }
+
         unit.moves().set(unit.movement());
 
         const busyAction = unit.busy();

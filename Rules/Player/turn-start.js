@@ -31,6 +31,9 @@ const getRules = (ruleRegistry = RuleRegistry_1.instance, cityRegistry = CityReg
         });
     })),
     new TurnStart_1.default(new Effect_1.default((player) => unitRegistry.getByPlayer(player).forEach((unit) => {
+        if (unit.destroyed()) {
+            return;
+        }
         unit.moves().set(unit.movement());
         const busyAction = unit.busy();
         if (!busyAction) {
