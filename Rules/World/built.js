@@ -1,13 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
+const AttributeRegistry_1 = require("@civ-clone/core-civilization/AttributeRegistry");
+const CityNameRegistry_1 = require("@civ-clone/core-civilization/CityNameRegistry");
 const CivilizationRegistry_1 = require("@civ-clone/core-civilization/CivilizationRegistry");
 const ClientRegistry_1 = require("@civ-clone/core-client/ClientRegistry");
 const Engine_1 = require("@civ-clone/core-engine/Engine");
+const LeaderRegistry_1 = require("@civ-clone/core-civilization/LeaderRegistry");
 const PlayerRegistry_1 = require("@civ-clone/core-player/PlayerRegistry");
 const PlayerWorldRegistry_1 = require("@civ-clone/core-player-world/PlayerWorldRegistry");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
+const TraitRegistry_1 = require("@civ-clone/core-civilization/TraitRegistry");
 const Built_1 = require("@civ-clone/core-world/Rules/Built");
+const ChoiceMeta_1 = require("@civ-clone/core-client/ChoiceMeta");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Food_1 = require("@civ-clone/base-terrain-yield-food/Food");
 const Grassland_1 = require("@civ-clone/base-terrain-grassland/Grassland");
@@ -16,9 +21,9 @@ const Plains_1 = require("@civ-clone/base-terrain-plains/Plains");
 const PlayerWorld_1 = require("@civ-clone/core-player-world/PlayerWorld");
 const Production_1 = require("@civ-clone/base-terrain-yield-production/Production");
 const River_1 = require("@civ-clone/base-terrain-river/River");
-const Trade_1 = require("@civ-clone/base-terrain-yield-trade/Trade");
 const Spawn_1 = require("@civ-clone/core-player/Rules/Spawn");
-const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, clientRegistry = ClientRegistry_1.instance, engine = Engine_1.instance, playerRegistry = PlayerRegistry_1.instance, playerWorldRegistry = PlayerWorldRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, randomNumberGenerator = () => Math.random()) => [
+const Trade_1 = require("@civ-clone/base-terrain-yield-trade/Trade");
+const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, clientRegistry = ClientRegistry_1.instance, engine = Engine_1.instance, playerRegistry = PlayerRegistry_1.instance, playerWorldRegistry = PlayerWorldRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, leaderRegistry = LeaderRegistry_1.instance, attributeRegistry = AttributeRegistry_1.instance, cityNameRegistry = CityNameRegistry_1.instance, traitRegistry = TraitRegistry_1.instance) => [
     new Built_1.default(new Effect_1.default((world) => playerRegistry
         .entries()
         .forEach((player) => playerWorldRegistry.register(new PlayerWorld_1.default(player, world))))),
@@ -55,8 +60,15 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
         clientRegistry.entries()
             .reduce((promise, client) => promise.then(async () => {
             const player = client.player();
-            await client.chooseCivilization(civilizationRegistry.entries());
-            civilizationRegistry.unregister(player.civilization().sourceClass());
+            console.log('processing ' + player.id());
+            console.log('waiting for client to choose from list: ' +
+                civilizationRegistry.entries().map((a) => a.name));
+            const CivilizationChoice = await client.chooseFromList(new ChoiceMeta_1.default(civilizationRegistry.entries(), 'choose-civilization')), civilization = new CivilizationChoice(attributeRegistry, cityNameRegistry);
+            player.setCivilization(civilization);
+            const LeaderChoice = await client.chooseFromList(new ChoiceMeta_1.default(leaderRegistry.getByCivilization(civilization.sourceClass()), 'choose-leader')), leader = new LeaderChoice(traitRegistry);
+            civilization.setLeader(leader);
+            civilizationRegistry.unregister(civilization.sourceClass());
+            leaderRegistry.unregister(leader.sourceClass());
             const [startingSquare] = ruleRegistry.process(PickStartTile_1.default, world, player, usedStartSquares);
             if (!startingSquare) {
                 throw new TypeError('Not enough `startingSquare`s.');

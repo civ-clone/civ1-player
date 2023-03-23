@@ -1,4 +1,12 @@
 import {
+  AttributeRegistry,
+  instance as attributeRegistryInstance,
+} from '@civ-clone/core-civilization/AttributeRegistry';
+import {
+  CityNameRegistry,
+  instance as cityNameRegistryInstance,
+} from '@civ-clone/core-civilization/CityNameRegistry';
+import {
   CivilizationRegistry,
   instance as civilizationRegistryInstance,
 } from '@civ-clone/core-civilization/CivilizationRegistry';
@@ -11,6 +19,10 @@ import {
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
 import {
+  LeaderRegistry,
+  instance as leaderRegistryInstance,
+} from '@civ-clone/core-civilization/LeaderRegistry';
+import {
   PlayerRegistry,
   instance as playerRegistryInstance,
 } from '@civ-clone/core-player/PlayerRegistry';
@@ -22,8 +34,13 @@ import {
   RuleRegistry,
   instance as ruleRegistryInstance,
 } from '@civ-clone/core-rule/RuleRegistry';
+import {
+  TraitRegistry,
+  instance as traitRegistryInstance,
+} from '@civ-clone/core-civilization/TraitRegistry';
 import Built from '@civ-clone/core-world/Rules/Built';
-import Client from '@civ-clone/core-civ-client/Client';
+import ChoiceMeta from '@civ-clone/core-client/ChoiceMeta';
+import Client from '@civ-clone/core-client/Client';
 import Effect from '@civ-clone/core-rule/Effect';
 import Food from '@civ-clone/base-terrain-yield-food/Food';
 import Grassland from '@civ-clone/base-terrain-grassland/Grassland';
@@ -33,10 +50,10 @@ import Player from '@civ-clone/core-player/Player';
 import PlayerWorld from '@civ-clone/core-player-world/PlayerWorld';
 import Production from '@civ-clone/base-terrain-yield-production/Production';
 import River from '@civ-clone/base-terrain-river/River';
+import Spawn from '@civ-clone/core-player/Rules/Spawn';
 import Tile from '@civ-clone/core-world/Tile';
 import Trade from '@civ-clone/base-terrain-yield-trade/Trade';
 import World from '@civ-clone/core-world/World';
-import Spawn from '@civ-clone/core-player/Rules/Spawn';
 
 export const getRules: (
   civilizationRegistry?: CivilizationRegistry,
@@ -45,7 +62,10 @@ export const getRules: (
   playerRegistry?: PlayerRegistry,
   playerWorldRegistry?: PlayerWorldRegistry,
   ruleRegistry?: RuleRegistry,
-  randomNumberGenerator?: () => number
+  leaderRegistry?: LeaderRegistry,
+  attributeRegistry?: AttributeRegistry,
+  cityNameRegistry?: CityNameRegistry,
+  traitRegistry?: TraitRegistry
 ) => Built[] = (
   civilizationRegistry: CivilizationRegistry = civilizationRegistryInstance,
   clientRegistry: ClientRegistry = clientRegistryInstance,
@@ -53,7 +73,10 @@ export const getRules: (
   playerRegistry: PlayerRegistry = playerRegistryInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
-  randomNumberGenerator: () => number = (): number => Math.random()
+  leaderRegistry: LeaderRegistry = leaderRegistryInstance,
+  attributeRegistry: AttributeRegistry = attributeRegistryInstance,
+  cityNameRegistry: CityNameRegistry = cityNameRegistryInstance,
+  traitRegistry: TraitRegistry = traitRegistryInstance
 ): Built[] => [
   new Built(
     new Effect((world: World): void =>
@@ -124,12 +147,40 @@ export const getRules: (
           (promise: Promise<void>, client: Client): Promise<void> =>
             promise.then(async () => {
               const player = client.player();
-
-              await client.chooseCivilization(civilizationRegistry.entries());
-
-              civilizationRegistry.unregister(
-                player.civilization().sourceClass()
+              console.log('processing ' + player.id());
+              console.log(
+                'waiting for client to choose from list: ' +
+                  civilizationRegistry.entries().map((a) => a.name)
               );
+
+              const CivilizationChoice = await client.chooseFromList(
+                  new ChoiceMeta(
+                    civilizationRegistry.entries(),
+                    'choose-civilization'
+                  )
+                ),
+                civilization = new CivilizationChoice(
+                  attributeRegistry,
+                  cityNameRegistry
+                );
+
+              player.setCivilization(civilization);
+
+              const LeaderChoice = await client.chooseFromList(
+                  new ChoiceMeta(
+                    leaderRegistry.getByCivilization(
+                      civilization.sourceClass()
+                    ),
+                    'choose-leader'
+                  )
+                ),
+                leader = new LeaderChoice(traitRegistry);
+
+              civilization.setLeader(leader);
+
+              civilizationRegistry.unregister(civilization.sourceClass());
+
+              leaderRegistry.unregister(leader.sourceClass());
 
               const [startingSquare] = ruleRegistry.process(
                 PickStartTile,
