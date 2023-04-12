@@ -59,11 +59,7 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
         engine.emit('world:start-tiles', startingSquares);
         clientRegistry.entries()
             .reduce((promise, client) => promise.then(async () => {
-            const player = client.player();
-            console.log('processing ' + player.id());
-            console.log('waiting for client to choose from list: ' +
-                civilizationRegistry.entries().map((a) => a.name));
-            const CivilizationChoice = await client.chooseFromList(new ChoiceMeta_1.default(civilizationRegistry.entries(), 'choose-civilization')), civilization = new CivilizationChoice(attributeRegistry, cityNameRegistry);
+            const player = client.player(), CivilizationChoice = await client.chooseFromList(new ChoiceMeta_1.default(civilizationRegistry.entries(), 'choose-civilization')), civilization = new CivilizationChoice(attributeRegistry, cityNameRegistry);
             player.setCivilization(civilization);
             const LeaderChoice = await client.chooseFromList(new ChoiceMeta_1.default(leaderRegistry.getByCivilization(civilization.sourceClass()), 'choose-leader')), leader = new LeaderChoice(traitRegistry);
             civilization.setLeader(leader);

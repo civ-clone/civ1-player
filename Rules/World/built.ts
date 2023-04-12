@@ -146,14 +146,8 @@ export const getRules: (
         .reduce(
           (promise: Promise<void>, client: Client): Promise<void> =>
             promise.then(async () => {
-              const player = client.player();
-              console.log('processing ' + player.id());
-              console.log(
-                'waiting for client to choose from list: ' +
-                  civilizationRegistry.entries().map((a) => a.name)
-              );
-
-              const CivilizationChoice = await client.chooseFromList(
+              const player = client.player(),
+                 CivilizationChoice = await client.chooseFromList(
                   new ChoiceMeta(
                     civilizationRegistry.entries(),
                     'choose-civilization'
