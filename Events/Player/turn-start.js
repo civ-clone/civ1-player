@@ -9,7 +9,12 @@ const getEvents = (clientRegistry = ClientRegistry_1.instance, engine = Engine_1
     [
         'player:turn-start',
         (player) => {
-            ruleRegistry.process(TurnStart_1.default, player);
+            try {
+                ruleRegistry.process(TurnStart_1.default, player);
+            }
+            catch (e) {
+                console.error(e);
+            }
             const client = clientRegistry.getByPlayer(player);
             client
                 .takeTurn()

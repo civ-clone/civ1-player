@@ -25,7 +25,11 @@ export const getEvents: (
   [
     'player:turn-start',
     (player: Player): void => {
-      ruleRegistry.process(TurnStart, player);
+      try {
+        ruleRegistry.process(TurnStart, player);
+      } catch (e) {
+        console.error(e);
+      }
 
       const client = clientRegistry.getByPlayer(player);
 

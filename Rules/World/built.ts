@@ -147,7 +147,7 @@ export const getRules: (
           (promise: Promise<void>, client: Client): Promise<void> =>
             promise.then(async () => {
               const player = client.player(),
-                 CivilizationChoice = await client.chooseFromList(
+                CivilizationChoice = await client.chooseFromList(
                   new ChoiceMeta(
                     civilizationRegistry.entries(),
                     'choose-civilization'
