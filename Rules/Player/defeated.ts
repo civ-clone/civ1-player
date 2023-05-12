@@ -14,14 +14,15 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Defeated from '@civ-clone/core-player/Rules/Defeated';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
+import {
+  UnitRegistry,
+  instance as unitRegistryInstance,
+} from '@civ-clone/core-unit/UnitRegistry';
 
-export const getRules: (
-  currentPlayerRegistry?: CurrentPlayerRegistry,
-  playerRegistry?: PlayerRegistry,
-  engine?: Engine
-) => Defeated[] = (
+export const getRules = (
   currentPlayerRegistry: CurrentPlayerRegistry = currentPlayerRegistryInstance,
   playerRegistry: PlayerRegistry = playerRegistryInstance,
+  unitRegistry: UnitRegistry = unitRegistryInstance,
   engine: Engine = engineInstance
 ): Defeated[] => [
   new Defeated(
@@ -31,6 +32,13 @@ export const getRules: (
   new Defeated(
     new Criterion((player: Player) => playerRegistry.includes(player)),
     new Effect((player: Player) => playerRegistry.unregister(player))
+  ),
+  new Defeated(
+    new Effect((player: Player, defeatingPlayer: Player | null) =>
+      unitRegistry
+        .getByPlayer(player)
+        .forEach((unit) => unit.destroy(defeatingPlayer))
+    )
   ),
   new Defeated(
     new Effect((player: Player, capturingPlayer: Player | null): void => {

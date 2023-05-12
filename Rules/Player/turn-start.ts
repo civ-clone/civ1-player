@@ -23,11 +23,7 @@ import Unit from '@civ-clone/core-unit/Unit';
 import Yield from '@civ-clone/core-yield/Yield';
 import { reduceYields } from '@civ-clone/core-yield/lib/reduceYields';
 
-export const getRules: (
-  ruleRegistry?: RuleRegistry,
-  cityRegistry?: CityRegistry,
-  unitRegistry?: UnitRegistry
-) => TurnStart[] = (
+export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
   cityRegistry: CityRegistry = cityRegistryInstance,
   unitRegistry: UnitRegistry = unitRegistryInstance

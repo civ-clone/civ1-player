@@ -55,18 +55,7 @@ import Tile from '@civ-clone/core-world/Tile';
 import Trade from '@civ-clone/base-terrain-yield-trade/Trade';
 import World from '@civ-clone/core-world/World';
 
-export const getRules: (
-  civilizationRegistry?: CivilizationRegistry,
-  clientRegistry?: ClientRegistry,
-  engine?: Engine,
-  playerRegistry?: PlayerRegistry,
-  playerWorldRegistry?: PlayerWorldRegistry,
-  ruleRegistry?: RuleRegistry,
-  leaderRegistry?: LeaderRegistry,
-  attributeRegistry?: AttributeRegistry,
-  cityNameRegistry?: CityNameRegistry,
-  traitRegistry?: TraitRegistry
-) => Built[] = (
+export const getRules = (
   civilizationRegistry: CivilizationRegistry = civilizationRegistryInstance,
   clientRegistry: ClientRegistry = clientRegistryInstance,
   engine: Engine = engineInstance,

@@ -10,10 +10,7 @@ import Built from '@civ-clone/core-tile-improvement/Rules/Built';
 import Effect from '@civ-clone/core-rule/Effect';
 import Tile from '@civ-clone/core-world/Tile';
 
-export const getRules: (
-  playerRegistry?: PlayerRegistry,
-  playerWorldRegistry?: PlayerWorldRegistry
-) => Built[] = (
+export const getRules = (
   playerRegistry: PlayerRegistry = playerRegistryInstance,
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance
 ): Built[] => [

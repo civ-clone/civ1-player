@@ -7,7 +7,7 @@ import Player from '@civ-clone/core-player/Player';
 import Tile from '@civ-clone/core-world/Tile';
 import VisibilityChanged from '@civ-clone/core-player-world/Rules/Player/VisibilityChanged';
 
-export const getRules: (engine?: Engine) => VisibilityChanged[] = (
+export const getRules = (
   engine: Engine = engineInstance
 ): VisibilityChanged[] => [
   new VisibilityChanged(

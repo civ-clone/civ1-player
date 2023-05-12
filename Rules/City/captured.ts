@@ -13,10 +13,7 @@ import Defeated from '@civ-clone/core-player/Rules/Defeated';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 
-export const getRules: (
-  cityRegistry?: CityRegistry,
-  ruleRegistry?: RuleRegistry
-) => Captured[] = (
+export const getRules = (
   cityRegistry: CityRegistry = cityRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Captured[] => [

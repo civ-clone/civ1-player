@@ -22,6 +22,6 @@ const endOfTurnRule = new Action(
   new Effect((player: Player) => [new EndTurn(player, null)])
 );
 
-export const getRules: () => Action[] = (): Action[] => [endOfTurnRule];
+export const getRules = (): Action[] => [endOfTurnRule];
 
 export default getRules;

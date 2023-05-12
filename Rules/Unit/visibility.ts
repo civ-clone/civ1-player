@@ -7,9 +7,7 @@ import Player from '@civ-clone/core-player/Player';
 import Tile from '@civ-clone/core-world/Tile';
 import Visibility from '@civ-clone/core-unit/Rules/Visibility';
 
-export const getRules: (
-  playerWorldRegistry?: PlayerWorldRegistry
-) => Visibility[] = (
+export const getRules = (
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance
 ): Visibility[] => [
   new Visibility(

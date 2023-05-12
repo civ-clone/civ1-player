@@ -13,10 +13,7 @@ import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import Unit from '@civ-clone/core-unit/Unit';
 
-export const getRules: (
-  cityRegistry?: CityRegistry,
-  ruleRegistry?: RuleRegistry
-) => Destroyed[] = (
+export const getRules = (
   cityRegistry: CityRegistry = cityRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Destroyed[] => [

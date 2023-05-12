@@ -8,7 +8,7 @@ import Settlers from '@civ-clone/base-unit-settlers/Settlers';
 import Spawn from '@civ-clone/core-player/Rules/Spawn';
 import Tile from '@civ-clone/core-world/Tile';
 
-export const getRules: (ruleRegistry?: RuleRegistry) => Spawn[] = (
+export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Spawn[] => [
   new Spawn(
