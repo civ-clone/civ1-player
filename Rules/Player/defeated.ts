@@ -18,10 +18,15 @@ import {
   UnitRegistry,
   instance as unitRegistryInstance,
 } from '@civ-clone/core-unit/UnitRegistry';
+import {
+  instance as ruleRegistryInstance,
+  RuleRegistry,
+} from '@civ-clone/core-rule/RuleRegistry';
 
 export const getRules = (
   currentPlayerRegistry: CurrentPlayerRegistry = currentPlayerRegistryInstance,
   playerRegistry: PlayerRegistry = playerRegistryInstance,
+  ruleRegistry: RuleRegistry = ruleRegistryInstance,
   unitRegistry: UnitRegistry = unitRegistryInstance,
   engine: Engine = engineInstance
 ): Defeated[] => [
@@ -34,11 +39,25 @@ export const getRules = (
     new Effect((player: Player) => playerRegistry.unregister(player))
   ),
   new Defeated(
-    new Effect((player: Player, defeatingPlayer: Player | null) =>
+    new Effect((player: Player, defeatingPlayer: Player | null) => {
+      const defeatedRules: [Defeated, boolean][] = ruleRegistry
+        .get(Defeated)
+        .map((rule) => [rule, rule.enabled()]);
+
+      defeatedRules.forEach(([rule]) => rule.disable());
+
       unitRegistry
         .getByPlayer(player)
-        .forEach((unit) => unit.destroy(defeatingPlayer))
-    )
+        .forEach((unit) => unit.destroy(defeatingPlayer));
+
+      defeatedRules.forEach(([rule, enabled]) => {
+        if (!enabled) {
+          return;
+        }
+
+        rule.enable();
+      });
+    })
   ),
   new Defeated(
     new Effect((player: Player, capturingPlayer: Player | null): void => {
