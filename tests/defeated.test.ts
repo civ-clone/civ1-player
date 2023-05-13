@@ -32,7 +32,13 @@ describe('Player.defeated', (): void => {
     playerRegistry.register(player1, player2);
     currentPlayerRegistry.register(...playerRegistry.entries());
     ruleRegistry.register(
-      ...defeated(currentPlayerRegistry, playerRegistry, engine)
+      ...defeated(
+        currentPlayerRegistry,
+        playerRegistry,
+        ruleRegistry,
+        undefined,
+        engine
+      )
     );
 
     expect(playerRegistry.length).equal(2);
