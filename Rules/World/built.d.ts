@@ -19,6 +19,6 @@ export declare const getRules: (
   leaderRegistry?: LeaderRegistry,
   attributeRegistry?: AttributeRegistry,
   cityNameRegistry?: CityNameRegistry,
-  traitRegistry?: TraitRegistry
+  traitRegistry?: TraitRegistry,
 ) => Built[];
 export default getRules;

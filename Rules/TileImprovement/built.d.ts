@@ -3,6 +3,6 @@ import { PlayerWorldRegistry } from '@civ-clone/core-player-world/PlayerWorldReg
 import Built from '@civ-clone/core-tile-improvement/Rules/Built';
 export declare const getRules: (
   playerRegistry?: PlayerRegistry,
-  playerWorldRegistry?: PlayerWorldRegistry
+  playerWorldRegistry?: PlayerWorldRegistry,
 ) => Built[];
 export default getRules;

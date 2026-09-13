@@ -4,6 +4,6 @@ import { PlayerRegistry } from '@civ-clone/core-player/PlayerRegistry';
 export declare const getEvents: (
   playerRegistry?: PlayerRegistry,
   currentPlayerRegistry?: CurrentPlayerRegistry,
-  engine?: Engine
+  engine?: Engine,
 ) => [string, () => any][];
 export default getEvents;

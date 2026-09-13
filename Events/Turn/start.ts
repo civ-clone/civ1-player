@@ -14,11 +14,11 @@ import {
 export const getEvents: (
   playerRegistry?: PlayerRegistry,
   currentPlayerRegistry?: CurrentPlayerRegistry,
-  engine?: Engine
+  engine?: Engine,
 ) => [string, () => any][] = (
   playerRegistry: PlayerRegistry = playerRegistryInstance,
   currentPlayerRegistry: CurrentPlayerRegistry = currentPlayerRegistryInstance,
-  engine: Engine = engineInstance
+  engine: Engine = engineInstance,
 ): [string, () => any][] => [
   [
     'turn:start',

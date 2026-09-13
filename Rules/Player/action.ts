@@ -19,7 +19,7 @@ const endOfTurnRule = new Action(
 
     return otherActions.length === 0;
   }),
-  new Effect((player: Player) => [new EndTurn(player, null)])
+  new Effect((player: Player) => [new EndTurn(player, null)]),
 );
 
 export const getRules = (): Action[] => [endOfTurnRule];

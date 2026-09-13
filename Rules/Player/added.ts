@@ -10,7 +10,7 @@ export const getRules = (engine: Engine = engineInstance): Added[] => [
   new Added(
     new Effect((player: Player): void => {
       engine.emit('player:added', player);
-    })
+    }),
   ),
 ];
 

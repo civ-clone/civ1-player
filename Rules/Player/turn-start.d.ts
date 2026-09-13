@@ -5,6 +5,6 @@ import TurnStart from '@civ-clone/core-player/Rules/TurnStart';
 export declare const getRules: (
   ruleRegistry?: RuleRegistry,
   cityRegistry?: CityRegistry,
-  unitRegistry?: UnitRegistry
+  unitRegistry?: UnitRegistry,
 ) => TurnStart[];
 export default getRules;

@@ -37,7 +37,7 @@ describe('World.built', () => {
       terrainFeatureRegistry = new TerrainFeatureRegistry(),
       unitRegistry = new UnitRegistry(),
       worldBuilt: Promise<void> = new Promise((resolve) =>
-        engine.on('game:start', resolve)
+        engine.on('game:start', resolve),
       ),
       world = new World(
         new Generator(10, 10, () => {
@@ -47,7 +47,7 @@ describe('World.built', () => {
 
           return terrain;
         }),
-        ruleRegistry
+        ruleRegistry,
       ),
       leaderRegistry = new LeaderRegistry(),
       player = new Player(ruleRegistry),
@@ -62,7 +62,7 @@ describe('World.built', () => {
         playerRegistry,
         playerWorldRegistry,
         ruleRegistry,
-        leaderRegistry
+        leaderRegistry,
       ),
       ...spawn(ruleRegistry),
       new PickStartTile(
@@ -72,8 +72,8 @@ describe('World.built', () => {
             .filter((tile) => !usedTiles.includes(tile));
 
           return available[Math.floor(Math.random() * available.length)];
-        })
-      )
+        }),
+      ),
     );
 
     civilizationRegistry.register(Babylonian);

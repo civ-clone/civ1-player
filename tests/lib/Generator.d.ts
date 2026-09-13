@@ -13,7 +13,7 @@ export declare class Generator extends BaseGenerator {
     generator: GeneratorFunction,
     options?: IOptions,
     ruleRegistry?: RuleRegistry,
-    terrainRegistry?: TerrainRegistry
+    terrainRegistry?: TerrainRegistry,
   );
   generate(): Promise<Terrain[]>;
 }

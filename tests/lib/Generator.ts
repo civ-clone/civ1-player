@@ -22,7 +22,7 @@ export class Generator extends BaseGenerator {
     generator: GeneratorFunction,
     options: IOptions = {},
     ruleRegistry: RuleRegistry = ruleRegistryInstance,
-    terrainRegistry: TerrainRegistry = terrainRegistryInstance
+    terrainRegistry: TerrainRegistry = terrainRegistryInstance,
   ) {
     super(height, width, options, ruleRegistry, terrainRegistry);
 

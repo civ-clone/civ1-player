@@ -3,6 +3,6 @@ import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import Destroyed from '@civ-clone/core-unit/Rules/Destroyed';
 export declare const getRules: (
   cityRegistry?: CityRegistry,
-  ruleRegistry?: RuleRegistry
+  ruleRegistry?: RuleRegistry,
 ) => Destroyed[];
 export default getRules;
