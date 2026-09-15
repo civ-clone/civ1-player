@@ -11,6 +11,7 @@ export const getRules = (
   engine: Engine = engineInstance
 ): VisibilityChanged[] => [
   new VisibilityChanged(
+    'civ1-player:player/visibility-changed/emit',
     new Effect((tile: Tile, player: Player): void => {
       engine.emit('player:visibility-changed', tile, player);
     })

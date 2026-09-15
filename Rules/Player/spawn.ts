@@ -12,6 +12,7 @@ export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Spawn[] => [
   new Spawn(
+    'civ1-player:player/spawn/settlers',
     new Effect((player: Player, tile: Tile): void => {
       new Settlers(null, player, tile, ruleRegistry);
     })

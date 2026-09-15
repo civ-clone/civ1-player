@@ -68,6 +68,7 @@ export const getRules = (
   traitRegistry: TraitRegistry = traitRegistryInstance
 ): Built[] => [
   new Built(
+    'civ1-player:world/built/register-player-worlds',
     new Effect((world: World): void =>
       playerRegistry
         .entries()
@@ -77,6 +78,7 @@ export const getRules = (
     )
   ),
   new Built(
+    'civ1-player:world/built/choose-start-tiles',
     new Effect((world: World): void => {
       const tileCache: Map<Tile, number> = new Map(),
         areaCache: Map<Tile, number> = new Map(),
@@ -186,6 +188,7 @@ export const getRules = (
     })
   ),
   new Built(
+    'civ1-player:world/built/emit',
     new Effect((world: World): void => {
       engine.emit('world:built', world);
     })

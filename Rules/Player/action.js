@@ -7,7 +7,7 @@ const Effect_1 = require("@civ-clone/core-rule/Effect");
 const EndTurn_1 = require("@civ-clone/base-player-action-end-turn/EndTurn");
 const Priority_1 = require("@civ-clone/core-rule/Priority");
 // Defined here so we can reference it
-const endOfTurnRule = new Action_1.default(
+const endOfTurnRule = new Action_1.default('civ1-player:player/action/end-turn', 
 // `Low` is probably enough in most cases, but just to make sure, it's over 9000
 new Priority_1.default(9001), new Criterion_1.default((player) => {
     // Prevent infinite recursion...

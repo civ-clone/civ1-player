@@ -8,7 +8,7 @@ const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Defeated_1 = require("@civ-clone/core-player/Rules/Defeated");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const getRules = (cityRegistry = CityRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance) => [
-    new Captured_1.default(new Criterion_1.default((capturedCity, capturingPlayer, originalPlayer) => cityRegistry
+    new Captured_1.default('civ1-player:city/captured/defeat-when-last-city', new Criterion_1.default((capturedCity, capturingPlayer, originalPlayer) => cityRegistry
         .getByPlayer(originalPlayer)
         .filter((city) => city !== capturedCity).length === 0
     // TODO: check for "total annihilation" setting and check number of units

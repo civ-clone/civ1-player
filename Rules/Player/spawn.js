@@ -6,7 +6,7 @@ const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Settlers_1 = require("@civ-clone/base-unit-settlers/Settlers");
 const Spawn_1 = require("@civ-clone/core-player/Rules/Spawn");
 const getRules = (ruleRegistry = RuleRegistry_1.instance) => [
-    new Spawn_1.default(new Effect_1.default((player, tile) => {
+    new Spawn_1.default('civ1-player:player/spawn/settlers', new Effect_1.default((player, tile) => {
         new Settlers_1.default(null, player, tile, ruleRegistry);
     })),
 ];

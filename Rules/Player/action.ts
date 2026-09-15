@@ -7,6 +7,7 @@ import Priority from '@civ-clone/core-rule/Priority';
 
 // Defined here so we can reference it
 const endOfTurnRule = new Action(
+  'civ1-player:player/action/end-turn',
   // `Low` is probably enough in most cases, but just to make sure, it's over 9000
   new Priority(9001),
   new Criterion((player: Player) => {

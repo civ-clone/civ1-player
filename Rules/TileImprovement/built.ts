@@ -15,6 +15,7 @@ export const getRules = (
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance
 ): Built[] => [
   new Built(
+    'civ1-player:tile-improvement/built/update-player-tiles',
     new Effect((tile: Tile) => {
       tile.clearYieldCache(null);
 

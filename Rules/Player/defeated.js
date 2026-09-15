@@ -10,9 +10,9 @@ const Effect_1 = require("@civ-clone/core-rule/Effect");
 const UnitRegistry_1 = require("@civ-clone/core-unit/UnitRegistry");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const getRules = (currentPlayerRegistry = CurrentPlayerRegistry_1.instance, playerRegistry = PlayerRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, engine = Engine_1.instance) => [
-    new Defeated_1.default(new Criterion_1.default((player) => currentPlayerRegistry.includes(player)), new Effect_1.default((player) => currentPlayerRegistry.unregister(player))),
-    new Defeated_1.default(new Criterion_1.default((player) => playerRegistry.includes(player)), new Effect_1.default((player) => playerRegistry.unregister(player))),
-    new Defeated_1.default(new Effect_1.default((player, defeatingPlayer) => {
+    new Defeated_1.default('civ1-player:player/defeated/remove-current-player', new Criterion_1.default((player) => currentPlayerRegistry.includes(player)), new Effect_1.default((player) => currentPlayerRegistry.unregister(player))),
+    new Defeated_1.default('civ1-player:player/defeated/unregister', new Criterion_1.default((player) => playerRegistry.includes(player)), new Effect_1.default((player) => playerRegistry.unregister(player))),
+    new Defeated_1.default('civ1-player:player/defeated/destroy-units', new Effect_1.default((player, defeatingPlayer) => {
         const defeatedRules = ruleRegistry
             .get(Defeated_1.default)
             .map((rule) => [rule, rule.enabled()]);
@@ -27,7 +27,7 @@ const getRules = (currentPlayerRegistry = CurrentPlayerRegistry_1.instance, play
             rule.enable();
         });
     })),
-    new Defeated_1.default(new Effect_1.default((player, capturingPlayer) => {
+    new Defeated_1.default('civ1-player:player/defeated/emit', new Effect_1.default((player, capturingPlayer) => {
         engine.emit('player:defeated', player, capturingPlayer);
     })),
 ];

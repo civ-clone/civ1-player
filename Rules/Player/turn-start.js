@@ -13,7 +13,7 @@ const Trade_1 = require("@civ-clone/base-terrain-yield-trade/Trade");
 const TurnStart_1 = require("@civ-clone/core-player/Rules/TurnStart");
 const reduceYields_1 = require("@civ-clone/core-yield/lib/reduceYields");
 const getRules = (ruleRegistry = RuleRegistry_1.instance, cityRegistry = CityRegistry_1.instance, unitRegistry = UnitRegistry_1.instance) => [
-    new TurnStart_1.default(new High_1.default(), new Effect_1.default((player) => {
+    new TurnStart_1.default('civ1-player:player/turn-start/process-city-yields', new High_1.default(), new Effect_1.default((player) => {
         // This will need to be excluded/replaced/updated if the base yields change, but having a dynamic approach here
         // causes the wrong values to be processed.
         cityRegistry.getByPlayer(player).forEach((city) => {
@@ -30,7 +30,7 @@ const getRules = (ruleRegistry = RuleRegistry_1.instance, cityRegistry = CityReg
                 .forEach((cityYield) => ruleRegistry.process(ProcessYield_1.default, cityYield, city, cityYields));
         });
     })),
-    new TurnStart_1.default(new Effect_1.default((player) => unitRegistry.getByPlayer(player).forEach((unit) => {
+    new TurnStart_1.default('civ1-player:player/turn-start/reset-units', new Effect_1.default((player) => unitRegistry.getByPlayer(player).forEach((unit) => {
         if (unit.destroyed()) {
             return;
         }

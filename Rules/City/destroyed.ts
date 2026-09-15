@@ -18,6 +18,7 @@ export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Destroyed[] => [
   new Destroyed(
+    'civ1-player:city/destroyed/defeat-when-last-city',
     new Criterion(
       (destroyedCity: City, destroyingPlayer: Player | null): boolean =>
         cityRegistry

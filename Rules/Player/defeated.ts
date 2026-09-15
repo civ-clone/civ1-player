@@ -31,14 +31,17 @@ export const getRules = (
   engine: Engine = engineInstance
 ): Defeated[] => [
   new Defeated(
+    'civ1-player:player/defeated/remove-current-player',
     new Criterion((player: Player) => currentPlayerRegistry.includes(player)),
     new Effect((player: Player) => currentPlayerRegistry.unregister(player))
   ),
   new Defeated(
+    'civ1-player:player/defeated/unregister',
     new Criterion((player: Player) => playerRegistry.includes(player)),
     new Effect((player: Player) => playerRegistry.unregister(player))
   ),
   new Defeated(
+    'civ1-player:player/defeated/destroy-units',
     new Effect((player: Player, defeatingPlayer: Player | null) => {
       const defeatedRules: [Defeated, boolean][] = ruleRegistry
         .get(Defeated)
@@ -60,6 +63,7 @@ export const getRules = (
     })
   ),
   new Defeated(
+    'civ1-player:player/defeated/emit',
     new Effect((player: Player, capturingPlayer: Player | null): void => {
       engine.emit('player:defeated', player, capturingPlayer);
     })

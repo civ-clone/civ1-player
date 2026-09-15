@@ -29,6 +29,7 @@ export const getRules = (
   unitRegistry: UnitRegistry = unitRegistryInstance
 ): TurnStart[] => [
   new TurnStart(
+    'civ1-player:player/turn-start/process-city-yields',
     new High(),
     new Effect((player: Player): void => {
       // This will need to be excluded/replaced/updated if the base yields change, but having a dynamic approach here
@@ -57,6 +58,7 @@ export const getRules = (
   ),
 
   new TurnStart(
+    'civ1-player:player/turn-start/reset-units',
     new Effect((player: Player): void =>
       unitRegistry.getByPlayer(player).forEach((unit: Unit): void => {
         if (unit.destroyed()) {

@@ -18,6 +18,7 @@ export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Destroyed[] => [
   new Destroyed(
+    'civ1-player:unit/destroyed/defeat-when-no-cities',
     new Criterion(
       (unit: Unit, destroyingPlayer: Player | null) =>
         cityRegistry.getByPlayer(unit.player()).length === 0

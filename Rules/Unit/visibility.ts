@@ -11,6 +11,7 @@ export const getRules = (
   playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance
 ): Visibility[] => [
   new Visibility(
+    'civ1-player:unit/visibility/reveal-tile',
     new Effect((tile: Tile, player: Player) => {
       tile.clearYieldCache(player);
 

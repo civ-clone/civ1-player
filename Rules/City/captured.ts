@@ -18,6 +18,7 @@ export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Captured[] => [
   new Captured(
+    'civ1-player:city/captured/defeat-when-last-city',
     new Criterion(
       (
         capturedCity: City,

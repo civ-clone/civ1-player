@@ -24,10 +24,10 @@ const River_1 = require("@civ-clone/base-terrain-river/River");
 const Spawn_1 = require("@civ-clone/core-player/Rules/Spawn");
 const Trade_1 = require("@civ-clone/base-terrain-yield-trade/Trade");
 const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, clientRegistry = ClientRegistry_1.instance, engine = Engine_1.instance, playerRegistry = PlayerRegistry_1.instance, playerWorldRegistry = PlayerWorldRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, leaderRegistry = LeaderRegistry_1.instance, attributeRegistry = AttributeRegistry_1.instance, cityNameRegistry = CityNameRegistry_1.instance, traitRegistry = TraitRegistry_1.instance) => [
-    new Built_1.default(new Effect_1.default((world) => playerRegistry
+    new Built_1.default('civ1-player:world/built/register-player-worlds', new Effect_1.default((world) => playerRegistry
         .entries()
         .forEach((player) => playerWorldRegistry.register(new PlayerWorld_1.default(player, world))))),
-    new Built_1.default(new Effect_1.default((world) => {
+    new Built_1.default('civ1-player:world/built/choose-start-tiles', new Effect_1.default((world) => {
         const tileCache = new Map(), areaCache = new Map(), tileScore = (tile, player = null) => {
             if (!tileCache.has(tile)) {
                 tileCache.set(tile, tile.score(player, [
@@ -74,7 +74,7 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
         }), Promise.resolve())
             .then(() => engine.emit('game:start'));
     })),
-    new Built_1.default(new Effect_1.default((world) => {
+    new Built_1.default('civ1-player:world/built/emit', new Effect_1.default((world) => {
         engine.emit('world:built', world);
     })),
 ];
