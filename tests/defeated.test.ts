@@ -64,7 +64,14 @@ describe('Player.defeated', (): void => {
         city.tile().getNeighbour('e'),
         ruleRegistry
       ),
-      defeatedEffect = spy();
+      defeatedEffect = spy(),
+      // Captured before the city changes hands. `city.player()` read at
+      // assertion time is the *enemy*, because `city.capture(enemy)` below
+      // reassigns it. This passed for years anyway: with `#private` fields two
+      // `Player`s had no enumerable state, so deep equality could not tell the
+      // defeated player from the one who defeated them. Stage 1 made `_id`
+      // enumerable and the assertion started meaning something.
+      player = city.player();
 
     ruleRegistry.register(
       ...unitDestroyed(cityRegistry, ruleRegistry),
@@ -79,9 +86,9 @@ describe('Player.defeated', (): void => {
     cityRegistry.unregister(city);
     unit.destroy(enemy);
 
-    expect(defeatedEffect).nth(1).called.with.exactly(city.player(), null);
-    expect(defeatedEffect).nth(2).called.with.exactly(city.player(), enemy);
-    expect(defeatedEffect).nth(3).called.with.exactly(city.player(), enemy);
+    expect(defeatedEffect).nth(1).called.with.exactly(player, null);
+    expect(defeatedEffect).nth(2).called.with.exactly(player, enemy);
+    expect(defeatedEffect).nth(3).called.with.exactly(player, enemy);
     expect(defeatedEffect).called.exactly(3);
   });
 });
