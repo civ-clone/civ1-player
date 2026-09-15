@@ -37,8 +37,8 @@ describe('Player.defeated', (): void => {
         playerRegistry,
         ruleRegistry,
         undefined,
-        engine,
-      ),
+        engine
+      )
     );
 
     expect(playerRegistry.length).equal(2);
@@ -62,7 +62,7 @@ describe('Player.defeated', (): void => {
         null,
         city.player(),
         city.tile().getNeighbour('e'),
-        ruleRegistry,
+        ruleRegistry
       ),
       defeatedEffect = spy();
 
@@ -70,7 +70,7 @@ describe('Player.defeated', (): void => {
       ...unitDestroyed(cityRegistry, ruleRegistry),
       ...cityDestroyed(cityRegistry, ruleRegistry),
       ...captured(cityRegistry, ruleRegistry),
-      new Defeated(new Effect(defeatedEffect)),
+      new Defeated(new Effect(defeatedEffect))
     );
 
     cityRegistry.register(city);

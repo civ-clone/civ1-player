@@ -9,12 +9,12 @@ import Spawn from '@civ-clone/core-player/Rules/Spawn';
 import Tile from '@civ-clone/core-world/Tile';
 
 export const getRules = (
-  ruleRegistry: RuleRegistry = ruleRegistryInstance,
+  ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Spawn[] => [
   new Spawn(
     new Effect((player: Player, tile: Tile): void => {
       new Settlers(null, player, tile, ruleRegistry);
-    }),
+    })
   ),
 ];
 

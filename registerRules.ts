@@ -23,7 +23,7 @@ export const register = (game: Game): void =>
       game.players,
       game.rules,
       game.units,
-      game.engine,
+      game.engine
     ),
     ...playerSpawn(game.rules),
     ...playerTurnStart(game.rules, game.cities, game.units),
@@ -41,8 +41,8 @@ export const register = (game: Game): void =>
       game.leaders,
       game.attributes,
       game.cityNames,
-      game.traits,
-    ),
+      game.traits
+    )
   );
 
 // The plugin loader imports each package for this side effect. Until it passes

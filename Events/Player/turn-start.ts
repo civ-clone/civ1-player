@@ -16,11 +16,11 @@ import TurnStart from '@civ-clone/core-player/Rules/TurnStart';
 export const getEvents: (
   clientRegistry?: ClientRegistry,
   engine?: Engine,
-  ruleRegistry?: RuleRegistry,
+  ruleRegistry?: RuleRegistry
 ) => [string, (player: Player) => void][] = (
   clientRegistry: ClientRegistry = clientRegistryInstance,
   engine: Engine = engineInstance,
-  ruleRegistry: RuleRegistry = ruleRegistryInstance,
+  ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): [string, (player: Player) => void][] => [
   [
     'player:turn-start',

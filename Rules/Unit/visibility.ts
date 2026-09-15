@@ -8,7 +8,7 @@ import Tile from '@civ-clone/core-world/Tile';
 import Visibility from '@civ-clone/core-unit/Rules/Visibility';
 
 export const getRules = (
-  playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
+  playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance
 ): Visibility[] => [
   new Visibility(
     new Effect((tile: Tile, player: Player) => {
@@ -21,7 +21,7 @@ export const getRules = (
       const playerTile = playerWorld.getByTile(tile)!;
 
       playerTile.update();
-    }),
+    })
   ),
 ];
 

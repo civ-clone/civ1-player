@@ -28,15 +28,15 @@ export const getRules = (
   playerRegistry: PlayerRegistry = playerRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
   unitRegistry: UnitRegistry = unitRegistryInstance,
-  engine: Engine = engineInstance,
+  engine: Engine = engineInstance
 ): Defeated[] => [
   new Defeated(
     new Criterion((player: Player) => currentPlayerRegistry.includes(player)),
-    new Effect((player: Player) => currentPlayerRegistry.unregister(player)),
+    new Effect((player: Player) => currentPlayerRegistry.unregister(player))
   ),
   new Defeated(
     new Criterion((player: Player) => playerRegistry.includes(player)),
-    new Effect((player: Player) => playerRegistry.unregister(player)),
+    new Effect((player: Player) => playerRegistry.unregister(player))
   ),
   new Defeated(
     new Effect((player: Player, defeatingPlayer: Player | null) => {
@@ -57,12 +57,12 @@ export const getRules = (
 
         rule.enable();
       });
-    }),
+    })
   ),
   new Defeated(
     new Effect((player: Player, capturingPlayer: Player | null): void => {
       engine.emit('player:defeated', player, capturingPlayer);
-    }),
+    })
   ),
 ];
 

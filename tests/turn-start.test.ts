@@ -46,9 +46,9 @@ describe('Player.turn-start', () => {
           new Food(1),
           new Production(2),
           new Trade(2),
-        ]),
+        ])
       ),
-      new ProcessYield(new Effect(processYieldSpy)),
+      new ProcessYield(new Effect(processYieldSpy))
     );
 
     cityRegistry.register(city);
@@ -74,7 +74,7 @@ describe('Player.turn-start', () => {
 
     ruleRegistry.register(
       ...turnStart(ruleRegistry, undefined, unitRegistry),
-      ...unitYield(Unit),
+      ...unitYield(Unit)
     );
 
     unitRegistry.register(unit);
@@ -102,8 +102,8 @@ describe('Player.turn-start', () => {
           unit.setActive();
           unit.moves().set(unit.movement());
           unit.setWaiting(false);
-        }),
-      ),
+        })
+      )
     );
 
     expect(unit.busy()?.validate()).false;

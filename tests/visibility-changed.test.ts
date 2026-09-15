@@ -31,7 +31,7 @@ describe('Player.visibility-changed', () => {
     ruleRegistry.register(
       ...visibility(playerWorldRegistry),
       ...visibilityChanged(engine),
-      ...unitYield(Unit, 1, 1, 1, 1),
+      ...unitYield(Unit, 1, 1, 1, 1)
     );
 
     playerWorldRegistry.register(playerWorld);
@@ -46,8 +46,8 @@ describe('Player.visibility-changed', () => {
         .called.with.exactly(
           'player:visibility-changed',
           tile,
-          playerWorld.player(),
-        ),
+          playerWorld.player()
+        )
     );
   });
 });

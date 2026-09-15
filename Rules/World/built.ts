@@ -65,16 +65,16 @@ export const getRules = (
   leaderRegistry: LeaderRegistry = leaderRegistryInstance,
   attributeRegistry: AttributeRegistry = attributeRegistryInstance,
   cityNameRegistry: CityNameRegistry = cityNameRegistryInstance,
-  traitRegistry: TraitRegistry = traitRegistryInstance,
+  traitRegistry: TraitRegistry = traitRegistryInstance
 ): Built[] => [
   new Built(
     new Effect((world: World): void =>
       playerRegistry
         .entries()
         .forEach((player: Player): void =>
-          playerWorldRegistry.register(new PlayerWorld(player, world)),
-        ),
-    ),
+          playerWorldRegistry.register(new PlayerWorld(player, world))
+        )
+    )
   ),
   new Built(
     new Effect((world: World): void => {
@@ -88,7 +88,7 @@ export const getRules = (
                 [Food, 8],
                 [Production, 3],
                 [Trade, 1],
-              ]),
+              ])
             );
           }
 
@@ -104,8 +104,8 @@ export const getRules = (
                 .reduce(
                   (total: number, tile: Tile): number =>
                     total + tileScore(tile, player),
-                  0,
-                ),
+                  0
+                )
             );
           }
 
@@ -119,8 +119,8 @@ export const getRules = (
           .entries()
           .filter((tile: Tile) =>
             [Grassland, Plains, River].some(
-              (TerrainType) => tile.terrain() instanceof TerrainType,
-            ),
+              (TerrainType) => tile.terrain() instanceof TerrainType
+            )
           )
           .map((tile: Tile) => ({
             tile,
@@ -139,12 +139,12 @@ export const getRules = (
                 CivilizationChoice = await client.chooseFromList(
                   new ChoiceMeta(
                     civilizationRegistry.entries(),
-                    'choose-civilization',
-                  ),
+                    'choose-civilization'
+                  )
                 ),
                 civilization = new CivilizationChoice(
                   attributeRegistry,
-                  cityNameRegistry,
+                  cityNameRegistry
                 );
 
               player.setCivilization(civilization);
@@ -152,10 +152,10 @@ export const getRules = (
               const LeaderChoice = await client.chooseFromList(
                   new ChoiceMeta(
                     leaderRegistry.getByCivilization(
-                      civilization.sourceClass(),
+                      civilization.sourceClass()
                     ),
-                    'choose-leader',
-                  ),
+                    'choose-leader'
+                  )
                 ),
                 leader = new LeaderChoice(traitRegistry);
 
@@ -169,7 +169,7 @@ export const getRules = (
                 PickStartTile,
                 world,
                 player,
-                usedStartSquares,
+                usedStartSquares
               );
 
               if (!startingSquare) {
@@ -180,15 +180,15 @@ export const getRules = (
 
               ruleRegistry.process(Spawn, player, startingSquare);
             }),
-          Promise.resolve(),
+          Promise.resolve()
         )
         .then(() => engine.emit('game:start'));
-    }),
+    })
   ),
   new Built(
     new Effect((world: World): void => {
       engine.emit('world:built', world);
-    }),
+    })
   ),
 ];
 

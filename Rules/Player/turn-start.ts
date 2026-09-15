@@ -26,7 +26,7 @@ import { reduceYields } from '@civ-clone/core-yield/lib/reduceYields';
 export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
   cityRegistry: CityRegistry = cityRegistryInstance,
-  unitRegistry: UnitRegistry = unitRegistryInstance,
+  unitRegistry: UnitRegistry = unitRegistryInstance
 ): TurnStart[] => [
   new TurnStart(
     new High(),
@@ -47,13 +47,13 @@ export const getRules = (
               new Food(0, 'Consolidated'),
               new Production(0, 'Consolidated'),
               new Trade(0, 'Consolidated'),
-            ],
+            ]
           )
           .forEach((cityYield: Yield) =>
-            ruleRegistry.process(ProcessYield, cityYield, city, cityYields),
+            ruleRegistry.process(ProcessYield, cityYield, city, cityYields)
           );
       });
-    }),
+    })
   ),
 
   new TurnStart(
@@ -81,8 +81,8 @@ export const getRules = (
         busyAction.process();
         // It's the job of the `DelayedAction` to set the `Unit` as active, otherwise `Action`s that chain `Busy` will
         // end up being cleared here.
-      }),
-    ),
+      })
+    )
   ),
 ];
 

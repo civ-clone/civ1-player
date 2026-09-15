@@ -21,7 +21,7 @@ describe('Player.action', () => {
     expect(actions[0]).instanceof(EndTurn);
 
     const anotherAction = new Action(
-      new Effect((player: Player) => [new MandatoryPlayerAction(player, null)]),
+      new Effect((player: Player) => [new MandatoryPlayerAction(player, null)])
     );
 
     ruleRegistry.register(anotherAction);
@@ -40,8 +40,8 @@ describe('Player.action', () => {
 
     ruleRegistry.register(
       new Action(
-        new Effect((player: Player) => [new PlayerAction(player, null)]),
-      ),
+        new Effect((player: Player) => [new PlayerAction(player, null)])
+      )
     );
 
     const actionsIncludingOptionalAction = player.actions(),

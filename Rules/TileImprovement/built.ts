@@ -12,7 +12,7 @@ import Tile from '@civ-clone/core-world/Tile';
 
 export const getRules = (
   playerRegistry: PlayerRegistry = playerRegistryInstance,
-  playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance,
+  playerWorldRegistry: PlayerWorldRegistry = playerWorldRegistryInstance
 ): Built[] => [
   new Built(
     new Effect((tile: Tile) => {
@@ -28,7 +28,7 @@ export const getRules = (
 
         tile.clearYieldCache(player);
       });
-    }),
+    })
   ),
 ];
 

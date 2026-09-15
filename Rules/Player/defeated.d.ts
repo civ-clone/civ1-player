@@ -9,6 +9,6 @@ export declare const getRules: (
   playerRegistry?: PlayerRegistry,
   ruleRegistry?: RuleRegistry,
   unitRegistry?: UnitRegistry,
-  engine?: Engine,
+  engine?: Engine
 ) => Defeated[];
 export default getRules;

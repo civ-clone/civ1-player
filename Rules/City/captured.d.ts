@@ -3,6 +3,6 @@ import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import Captured from '@civ-clone/core-city/Rules/Captured';
 export declare const getRules: (
   cityRegistry?: CityRegistry,
-  ruleRegistry?: RuleRegistry,
+  ruleRegistry?: RuleRegistry
 ) => Captured[];
 export default getRules;

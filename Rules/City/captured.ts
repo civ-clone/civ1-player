@@ -15,26 +15,26 @@ import Player from '@civ-clone/core-player/Player';
 
 export const getRules = (
   cityRegistry: CityRegistry = cityRegistryInstance,
-  ruleRegistry: RuleRegistry = ruleRegistryInstance,
+  ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Captured[] => [
   new Captured(
     new Criterion(
       (
         capturedCity: City,
         capturingPlayer: Player,
-        originalPlayer: Player,
+        originalPlayer: Player
       ): boolean =>
         cityRegistry
           .getByPlayer(originalPlayer)
-          .filter((city: City) => city !== capturedCity).length === 0,
+          .filter((city: City) => city !== capturedCity).length === 0
       // TODO: check for "total annihilation" setting and check number of units
       // && unitRegistry.getByPlayer(destroyedCity.player()).length === 0
     ),
     new Effect(
       (capturedCity: City, capturingPlayer: Player, player: Player): void => {
         ruleRegistry.process(Defeated, player, capturingPlayer);
-      },
-    ),
+      }
+    )
   ),
 ];
 
