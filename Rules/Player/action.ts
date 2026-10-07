@@ -14,11 +14,13 @@ const endOfTurnRule = new Action(
     // Prevent infinite recursion...
     endOfTurnRule.disable();
 
-    const otherActions = player.mandatoryActions();
+    // Only whether there is one: listing them all made every `actions()` cost
+    // two full passes (civ-clone/web-renderer#314).
+    const hasOtherActions = player.hasMandatoryActions();
 
     endOfTurnRule.enable();
 
-    return otherActions.length === 0;
+    return !hasOtherActions;
   }),
   new Effect((player: Player) => [new EndTurn(player, null)])
 );
