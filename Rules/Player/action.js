@@ -12,9 +12,11 @@ const endOfTurnRule = new Action_1.default('civ1-player:player/action/end-turn',
 new Priority_1.default(9001), new Criterion_1.default((player) => {
     // Prevent infinite recursion...
     endOfTurnRule.disable();
-    const otherActions = player.mandatoryActions();
+    // Only whether there is one: listing them all made every `actions()` cost
+    // two full passes (civ-clone/web-renderer#314).
+    const hasOtherActions = player.hasMandatoryActions();
     endOfTurnRule.enable();
-    return otherActions.length === 0;
+    return !hasOtherActions;
 }), new Effect_1.default((player) => [new EndTurn_1.default(player, null)]));
 const getRules = () => [endOfTurnRule];
 exports.getRules = getRules;
