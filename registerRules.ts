@@ -7,6 +7,7 @@ import playerSpawn from './Rules/Player/spawn';
 import playerTurnStart from './Rules/Player/turn-start';
 import playerVisibilityChanged from './Rules/Player/visibility-changed';
 import tileImprovementBuilt from './Rules/TileImprovement/built';
+import tileImprovementRemoved from './Rules/TileImprovement/removed';
 import unitDestroyed from './Rules/Unit/destroyed';
 import unitVisibility from './Rules/Unit/visibility';
 import worldBuilt from './Rules/World/built';
@@ -29,6 +30,7 @@ export const register = (game: Game): void =>
     ...playerTurnStart(game.rules, game.cities, game.units),
     ...playerVisibilityChanged(game.engine),
     ...tileImprovementBuilt(game.players, game.playerWorlds),
+    ...tileImprovementRemoved(game.players, game.playerWorlds),
     ...unitDestroyed(game.cities, game.rules),
     ...unitVisibility(game.playerWorlds),
     ...worldBuilt(
