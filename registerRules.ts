@@ -15,8 +15,8 @@ import { Game, defaultGame } from '@civ-clone/core-game';
 
 export const register = (game: Game): void =>
   game.rules.register(
-    ...cityCaptured(game.cities, game.rules),
-    ...cityDestroyed(game.cities, game.rules),
+    ...cityCaptured(game.cities, game.rules, game.units, game.clients),
+    ...cityDestroyed(game.cities, game.rules, game.units, game.clients),
     ...playerAction(),
     ...playerAdded(game.engine),
     ...playerDefeated(
@@ -31,7 +31,7 @@ export const register = (game: Game): void =>
     ...playerVisibilityChanged(game.engine),
     ...tileImprovementBuilt(game.players, game.playerWorlds),
     ...tileImprovementRemoved(game.players, game.playerWorlds),
-    ...unitDestroyed(game.cities, game.rules),
+    ...unitDestroyed(game.cities, game.rules, game.units, game.clients),
     ...unitVisibility(game.playerWorlds),
     ...worldBuilt(
       game.civilizations,

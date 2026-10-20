@@ -15,6 +15,10 @@ import captured from '../Rules/City/captured';
 import { CityRegistry } from '@civ-clone/core-city/CityRegistry';
 import Unit from '@civ-clone/core-unit/Unit';
 import Effect from '@civ-clone/core-rule/Effect';
+import Client from '@civ-clone/core-client/Client';
+import ClientRegistry from '@civ-clone/core-client/ClientRegistry';
+import Settlers from '@civ-clone/base-unit-settlers/Settlers';
+import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
 
 use(spies);
 
@@ -90,5 +94,93 @@ describe('Player.defeated', (): void => {
     expect(defeatedEffect).nth(2).called.with.exactly(player, enemy);
     expect(defeatedEffect).nth(3).called.with.exactly(player, enemy);
     expect(defeatedEffect).called.exactly(3);
+  });
+
+  describe('the human', (): void => {
+    // A city of the human's, a Settlers unit (or a Warriors-like one) of theirs elsewhere, and the rules that decide
+    //  whether losing either defeats them.
+    const setUp = async (UnitType: typeof Unit, human: boolean = true) => {
+      const ruleRegistry = new RuleRegistry(),
+        cityRegistry = new CityRegistry(),
+        unitRegistry = new UnitRegistry(),
+        clientRegistry = new ClientRegistry(),
+        city = await setUpCity({ ruleRegistry }),
+        player = city.player(),
+        enemy = new Player(ruleRegistry),
+        unit = new UnitType(
+          null,
+          player,
+          city.tile().getNeighbour('e'),
+          ruleRegistry
+        ),
+        defeatedEffect = spy();
+
+      if (human) {
+        clientRegistry.register(new Client(player));
+      }
+
+      cityRegistry.register(city);
+      unitRegistry.register(unit);
+
+      ruleRegistry.register(
+        ...unitDestroyed(
+          cityRegistry,
+          ruleRegistry,
+          unitRegistry,
+          clientRegistry
+        ),
+        ...cityDestroyed(
+          cityRegistry,
+          ruleRegistry,
+          unitRegistry,
+          clientRegistry
+        ),
+        ...captured(cityRegistry, ruleRegistry, unitRegistry, clientRegistry),
+        new Defeated(new Effect(defeatedEffect))
+      );
+
+      return { city, cityRegistry, defeatedEffect, enemy, player, unit };
+    };
+
+    it('is not defeated losing their last city while they have a Settlers', async (): Promise<void> => {
+      const { city, defeatedEffect, enemy } = await setUp(Settlers);
+
+      city.capture(enemy);
+
+      expect(defeatedEffect).not.called();
+    });
+
+    it('is defeated losing their last Settlers with no cities', async (): Promise<void> => {
+      const { city, cityRegistry, defeatedEffect, enemy, player, unit } =
+        await setUp(Settlers);
+
+      city.destroy();
+      cityRegistry.unregister(city);
+
+      expect(defeatedEffect).not.called();
+
+      unit.destroy(enemy);
+
+      expect(defeatedEffect).called.once.with.exactly(player, enemy);
+    });
+
+    it('is defeated losing their last city with no Settlers', async (): Promise<void> => {
+      const { city, defeatedEffect, enemy, player } = await setUp(Unit);
+
+      city.capture(enemy);
+
+      expect(defeatedEffect).called.once.with.exactly(player, enemy);
+    });
+
+    it('leaves a computer player defeated at no cities, Settlers or not', async (): Promise<void> => {
+      const { city, defeatedEffect, enemy, player } = await setUp(
+        Settlers,
+        false
+      );
+
+      city.capture(enemy);
+
+      expect(defeatedEffect).called.once.with.exactly(player, enemy);
+    });
   });
 });
