@@ -56,8 +56,15 @@ export const addPlayer = (
     ? [leader]
     : game.leaders.getByCivilization(CivilizationType);
 
-  if (LeaderType === null) {
-    throw new TypeError(`${CivilizationType.name} has no leader left.`);
+  if (
+    LeaderType === null ||
+    !game.leaders.getByCivilization(CivilizationType).includes(LeaderType)
+  ) {
+    throw new TypeError(
+      `${CivilizationType.name} has no leader left${
+        leader ? ` called ${leader.name}` : ''
+      }.`
+    );
   }
 
   const player = new Player(game.rules),
