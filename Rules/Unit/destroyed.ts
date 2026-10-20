@@ -36,7 +36,8 @@ export const getRules = (
         cityRegistry,
         unitRegistry,
         clientRegistry,
-        unit
+        unit,
+        true
       )
     ),
     new Effect((unit: Unit, destroyingPlayer: Player | null) =>

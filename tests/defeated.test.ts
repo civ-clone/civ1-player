@@ -139,7 +139,16 @@ describe('Player.defeated', (): void => {
         new Defeated(new Effect(defeatedEffect))
       );
 
-      return { city, cityRegistry, defeatedEffect, enemy, player, unit };
+      return {
+        city,
+        cityRegistry,
+        defeatedEffect,
+        enemy,
+        player,
+        ruleRegistry,
+        unit,
+        unitRegistry,
+      };
     };
 
     it('is not defeated losing their last city while they have a Settlers', async (): Promise<void> => {
@@ -168,6 +177,38 @@ describe('Player.defeated', (): void => {
       const { city, defeatedEffect, enemy, player } = await setUp(Unit);
 
       city.capture(enemy);
+
+      expect(defeatedEffect).called.once.with.exactly(player, enemy);
+    });
+
+    it('keeps a player with no cities yet, but a Settlers, in the game when it loses a unit', async (): Promise<void> => {
+      const {
+        city,
+        cityRegistry,
+        defeatedEffect,
+        enemy,
+        player,
+        ruleRegistry,
+        unit: settlers,
+        unitRegistry,
+      } = await setUp(Settlers, false);
+
+      // As though it hadn't founded its first city yet.
+      cityRegistry.unregister(city);
+
+      const explorer = new Unit(
+        null,
+        player,
+        city.tile().getNeighbour('w'),
+        ruleRegistry
+      );
+
+      unitRegistry.register(explorer);
+      explorer.destroy(enemy);
+
+      expect(defeatedEffect).not.called();
+
+      settlers.destroy(enemy);
 
       expect(defeatedEffect).called.once.with.exactly(player, enemy);
     });
