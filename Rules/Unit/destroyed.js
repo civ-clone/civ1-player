@@ -11,7 +11,7 @@ const Destroyed_1 = require("@civ-clone/core-unit/Rules/Destroyed");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const isDefeated_1 = require("../../lib/isDefeated");
 const getRules = (cityRegistry = CityRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, clientRegistry = ClientRegistry_1.instance) => [
-    new Destroyed_1.default('civ1-player:unit/destroyed/defeat-when-no-cities', new Criterion_1.default((unit) => (0, isDefeated_1.default)(unit.player(), cityRegistry, unitRegistry, clientRegistry, unit)), new Effect_1.default((unit, destroyingPlayer) => ruleRegistry.process(Defeated_1.default, unit.player(), destroyingPlayer))),
+    new Destroyed_1.default('civ1-player:unit/destroyed/defeat-when-no-cities', new Criterion_1.default((unit) => (0, isDefeated_1.default)(unit.player(), cityRegistry, unitRegistry, clientRegistry, unit, true)), new Effect_1.default((unit, destroyingPlayer) => ruleRegistry.process(Defeated_1.default, unit.player(), destroyingPlayer))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
