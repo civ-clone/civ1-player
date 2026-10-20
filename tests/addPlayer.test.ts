@@ -44,6 +44,17 @@ describe('addPlayer', (): void => {
     expect(spawned).to.deep.equal([player]);
   });
 
+  it("won't take a leader who is already taken", (): void => {
+    const { game, world } = setUp();
+
+    game.leaders.unregister(Hammurabi);
+
+    expect(() =>
+      addPlayer(game, world, { civilization: Babylonian, leader: Hammurabi })
+    ).to.throw(TypeError);
+    expect(game.players.length).to.equal(0);
+  });
+
   it('claims the civilization and leader, so nobody else can play them', (): void => {
     const { game, world } = setUp();
 
