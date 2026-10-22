@@ -10,8 +10,11 @@ const Defeated_1 = require("@civ-clone/core-player/Rules/Defeated");
 const Destroyed_1 = require("@civ-clone/core-city/Rules/Destroyed");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const isDefeated_1 = require("../../lib/isDefeated");
+const isBarbarian_1 = require("@civ-clone/base-civilization-barbarian/isBarbarian");
 const getRules = (cityRegistry = CityRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, clientRegistry = ClientRegistry_1.instance) => [
-    new Destroyed_1.default('civ1-player:city/destroyed/defeat-when-last-city', new Criterion_1.default((destroyedCity) => (0, isDefeated_1.default)(destroyedCity.player(), cityRegistry, unitRegistry, clientRegistry, destroyedCity)), new Effect_1.default((city, destroyingPlayer) => ruleRegistry.process(Defeated_1.default, city.player(), destroyingPlayer))),
+    new Destroyed_1.default('civ1-player:city/destroyed/defeat-when-last-city', 
+    // Barbarians are never defeated (civ-clone/web-renderer#169).
+    new Criterion_1.default((destroyedCity) => !(0, isBarbarian_1.default)(destroyedCity.player())), new Criterion_1.default((destroyedCity) => (0, isDefeated_1.default)(destroyedCity.player(), cityRegistry, unitRegistry, clientRegistry, destroyedCity)), new Effect_1.default((city, destroyingPlayer) => ruleRegistry.process(Defeated_1.default, city.player(), destroyingPlayer))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
