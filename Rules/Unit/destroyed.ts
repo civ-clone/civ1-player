@@ -20,6 +20,7 @@ import Destroyed from '@civ-clone/core-unit/Rules/Destroyed';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import isDefeated from '../../lib/isDefeated';
+import isBarbarian from '@civ-clone/base-civilization-barbarian/isBarbarian';
 import Unit from '@civ-clone/core-unit/Unit';
 
 export const getRules = (
@@ -30,6 +31,8 @@ export const getRules = (
 ): Destroyed[] => [
   new Destroyed(
     'civ1-player:unit/destroyed/defeat-when-no-cities',
+    // Barbarians are never defeated (civ-clone/web-renderer#169).
+    new Criterion((unit: Unit): boolean => !isBarbarian(unit.player())),
     new Criterion((unit: Unit): boolean =>
       isDefeated(
         unit.player(),

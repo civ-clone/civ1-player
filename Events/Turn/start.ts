@@ -10,6 +10,8 @@ import {
   PlayerRegistry,
   instance as playerRegistryInstance,
 } from '@civ-clone/core-player/PlayerRegistry';
+import Player from '@civ-clone/core-player/Player';
+import isBarbarian from '@civ-clone/base-civilization-barbarian/isBarbarian';
 
 export const getEvents: (
   playerRegistry?: PlayerRegistry,
@@ -23,7 +25,14 @@ export const getEvents: (
   [
     'turn:start',
     (): void => {
-      currentPlayerRegistry.register(...playerRegistry.entries());
+      // The barbarians move first, as v474.05's slot 0 does (civ-clone/web-renderer#169), then everyone else in the
+      //  order they joined.
+      const players = playerRegistry.entries();
+
+      currentPlayerRegistry.register(
+        ...players.filter((player: Player): boolean => isBarbarian(player)),
+        ...players.filter((player: Player): boolean => !isBarbarian(player))
+      );
 
       const [currentPlayer] = currentPlayerRegistry.entries();
 

@@ -21,6 +21,7 @@ import Defeated from '@civ-clone/core-player/Rules/Defeated';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import isDefeated from '../../lib/isDefeated';
+import isBarbarian from '@civ-clone/base-civilization-barbarian/isBarbarian';
 
 export const getRules = (
   cityRegistry: CityRegistry = cityRegistryInstance,
@@ -30,6 +31,14 @@ export const getRules = (
 ): Captured[] => [
   new Captured(
     'civ1-player:city/captured/defeat-when-last-city',
+    // Barbarians are never defeated (civ-clone/web-renderer#169).
+    new Criterion(
+      (
+        capturedCity: City,
+        capturingPlayer: Player,
+        originalPlayer: Player
+      ): boolean => !isBarbarian(originalPlayer)
+    ),
     new Criterion(
       (
         capturedCity: City,
