@@ -15,6 +15,9 @@ import captured from '../Rules/City/captured';
 import { CityRegistry } from '@civ-clone/core-city/CityRegistry';
 import Unit from '@civ-clone/core-unit/Unit';
 import Effect from '@civ-clone/core-rule/Effect';
+import Captured from '@civ-clone/core-city/Rules/Captured';
+import CityDestroyed from '@civ-clone/core-city/Rules/Destroyed';
+import High from '@civ-clone/core-rule/Priorities/High';
 import Client from '@civ-clone/core-client/Client';
 import ClientRegistry from '@civ-clone/core-client/ClientRegistry';
 import Settlers from '@civ-clone/base-unit-settlers/Settlers';
@@ -60,6 +63,7 @@ describe('Player.defeated', (): void => {
   it('should trigger checking `Defeated` `Rule` when losing a `Unit` or `City` (either captured or destroyed)', async (): Promise<void> => {
     const ruleRegistry = new RuleRegistry(),
       cityRegistry = new CityRegistry(),
+      playerRegistry = new PlayerRegistry(),
       city = await setUpCity({ ruleRegistry }),
       enemy = new Player(),
       unit = new Unit(
@@ -78,12 +82,31 @@ describe('Player.defeated', (): void => {
       player = city.player();
 
     ruleRegistry.register(
-      ...unitDestroyed(cityRegistry, ruleRegistry),
-      ...cityDestroyed(cityRegistry, ruleRegistry),
-      ...captured(cityRegistry, ruleRegistry),
+      ...unitDestroyed(
+        cityRegistry,
+        ruleRegistry,
+        undefined,
+        undefined,
+        playerRegistry
+      ),
+      ...cityDestroyed(
+        cityRegistry,
+        ruleRegistry,
+        undefined,
+        undefined,
+        playerRegistry
+      ),
+      ...captured(
+        cityRegistry,
+        ruleRegistry,
+        undefined,
+        undefined,
+        playerRegistry
+      ),
       new Defeated(new Effect(defeatedEffect))
     );
 
+    playerRegistry.register(player);
     cityRegistry.register(city);
     city.destroy();
     city.capture(enemy);
@@ -104,6 +127,7 @@ describe('Player.defeated', (): void => {
         cityRegistry = new CityRegistry(),
         unitRegistry = new UnitRegistry(),
         clientRegistry = new ClientRegistry(),
+        playerRegistry = new PlayerRegistry(),
         city = await setUpCity({ ruleRegistry }),
         player = city.player(),
         enemy = new Player(ruleRegistry),
@@ -119,6 +143,7 @@ describe('Player.defeated', (): void => {
         clientRegistry.register(new Client(player));
       }
 
+      playerRegistry.register(player);
       cityRegistry.register(city);
       unitRegistry.register(unit);
 
@@ -127,15 +152,23 @@ describe('Player.defeated', (): void => {
           cityRegistry,
           ruleRegistry,
           unitRegistry,
-          clientRegistry
+          clientRegistry,
+          playerRegistry
         ),
         ...cityDestroyed(
           cityRegistry,
           ruleRegistry,
           unitRegistry,
-          clientRegistry
+          clientRegistry,
+          playerRegistry
         ),
-        ...captured(cityRegistry, ruleRegistry, unitRegistry, clientRegistry),
+        ...captured(
+          cityRegistry,
+          ruleRegistry,
+          unitRegistry,
+          clientRegistry,
+          playerRegistry
+        ),
         new Defeated(new Effect(defeatedEffect))
       );
 
@@ -145,11 +178,110 @@ describe('Player.defeated', (): void => {
         defeatedEffect,
         enemy,
         player,
+        playerRegistry,
         ruleRegistry,
         unit,
         unitRegistry,
       };
     };
+
+    it('is defeated once when losing their last city disbands the units it supported (civ-clone/web-renderer#600)', async (): Promise<void> => {
+      const {
+        city,
+        defeatedEffect,
+        enemy,
+        player,
+        playerRegistry,
+        ruleRegistry,
+        unit,
+        unitRegistry,
+      } = await setUp(Unit, false);
+
+      // The rules that take a defeated player out of the game, which the triggers then see.
+      ruleRegistry.register(
+        ...defeated(
+          new CurrentPlayerRegistry(),
+          playerRegistry,
+          ruleRegistry,
+          unitRegistry
+        )
+      );
+
+      const other = new Unit(
+        null,
+        player,
+        city.tile().getNeighbour('w'),
+        ruleRegistry
+      );
+
+      unitRegistry.register(other);
+
+      // As civ1-city's `city/captured/destroy-supported-units` does, registered ahead of the rule that defeats the
+      //  player on losing their last city, as civ1-city's rules are: the city changes hands, then each unit it
+      //  supported is disbanded.
+      ruleRegistry.register(
+        new Captured(
+          new High(),
+          new Effect((): void => {
+            unit.destroy();
+            other.destroy();
+          })
+        )
+      );
+
+      city.capture(enemy);
+
+      // The first unit's disbanding defeats the player, and civ1-city passes no player for that; the capture no longer does.
+      expect(defeatedEffect).called.once.with.exactly(player, null);
+      expect(playerRegistry.entries()).not.include(player);
+    });
+
+    it('is defeated once when losing their last city to destruction disbands the units it supported', async (): Promise<void> => {
+      const {
+        city,
+        defeatedEffect,
+        enemy,
+        player,
+        playerRegistry,
+        ruleRegistry,
+        unit,
+        unitRegistry,
+      } = await setUp(Unit, false);
+
+      ruleRegistry.register(
+        ...defeated(
+          new CurrentPlayerRegistry(),
+          playerRegistry,
+          ruleRegistry,
+          unitRegistry
+        )
+      );
+
+      const other = new Unit(
+        null,
+        player,
+        city.tile().getNeighbour('w'),
+        ruleRegistry
+      );
+
+      unitRegistry.register(other);
+
+      // As civ1-city's `city/destroyed/destroy-supported-units` does, ahead of the rule that defeats the player.
+      ruleRegistry.register(
+        new CityDestroyed(
+          new High(),
+          new Effect((): void => {
+            unit.destroy();
+            other.destroy();
+          })
+        )
+      );
+
+      city.destroy(enemy);
+
+      expect(defeatedEffect).called.once.with.exactly(player, null);
+      expect(playerRegistry.entries()).not.include(player);
+    });
 
     it('is not defeated losing their last city while they have a Settlers', async (): Promise<void> => {
       const { city, defeatedEffect, enemy } = await setUp(Settlers);
