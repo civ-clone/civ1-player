@@ -40,6 +40,7 @@ import {
 } from '@civ-clone/core-civilization/TraitRegistry';
 import Built from '@civ-clone/core-world/Rules/Built';
 import ChoiceMeta from '@civ-clone/core-client/ChoiceMeta';
+import Civilization from '@civ-clone/core-civilization/Civilization';
 import Client from '@civ-clone/core-client/Client';
 import Effect from '@civ-clone/core-rule/Effect';
 import Food from '@civ-clone/base-terrain-yield-food/Food';
@@ -133,39 +134,75 @@ export const getRules = (
 
       engine.emit('world:start-tiles', startingSquares);
 
+      // A civilization or leader chosen before the world is built (a game set up seat by seat, civ-clone/web-renderer#604)
+      //  is kept, and taken out of the choice before anyone else picks, so that a player choosing at random can't take
+      //  it. `Player#civilization` throws while unset, so this is the only way to ask. A preset leader is trusted to be
+      //  one of its civilization's: whoever set it chose it from that list.
+      const chosenCivilization = (player: Player): Civilization | null => {
+        try {
+          return player.civilization();
+        } catch {
+          return null;
+        }
+      };
+
+      (clientRegistry.entries() as Client[]).forEach((client: Client): void => {
+        const civilization = chosenCivilization(client.player());
+
+        if (civilization === null) {
+          return;
+        }
+
+        civilizationRegistry.unregister(civilization.sourceClass());
+
+        const leader = civilization.leader();
+
+        if (leader !== null) {
+          leaderRegistry.unregister(leader.sourceClass());
+        }
+      });
+
       (clientRegistry.entries() as Client[])
         .reduce(
           (promise: Promise<void>, client: Client): Promise<void> =>
             promise.then(async () => {
-              const player = client.player(),
-                CivilizationChoice = await client.chooseFromList(
+              const player = client.player();
+
+              let civilization = chosenCivilization(player);
+
+              if (civilization === null) {
+                const CivilizationChoice = await client.chooseFromList(
                   new ChoiceMeta(
                     civilizationRegistry.entries(),
                     'choose-civilization'
                   )
-                ),
+                );
+
                 civilization = new CivilizationChoice(
                   attributeRegistry,
                   cityNameRegistry
                 );
 
-              player.setCivilization(civilization);
+                player.setCivilization(civilization);
 
-              const LeaderChoice = await client.chooseFromList(
-                  new ChoiceMeta(
-                    leaderRegistry.getByCivilization(
-                      civilization.sourceClass()
-                    ),
-                    'choose-leader'
-                  )
-                ),
-                leader = new LeaderChoice(traitRegistry);
+                civilizationRegistry.unregister(civilization.sourceClass());
+              }
 
-              civilization.setLeader(leader);
+              if (civilization.leader() === null) {
+                const LeaderChoice = await client.chooseFromList(
+                    new ChoiceMeta(
+                      leaderRegistry.getByCivilization(
+                        civilization.sourceClass()
+                      ),
+                      'choose-leader'
+                    )
+                  ),
+                  leader = new LeaderChoice(traitRegistry);
 
-              civilizationRegistry.unregister(civilization.sourceClass());
+                civilization.setLeader(leader);
 
-              leaderRegistry.unregister(leader.sourceClass());
+                leaderRegistry.unregister(leader.sourceClass());
+              }
 
               const [startingSquare] = ruleRegistry.process(
                 PickStartTile,

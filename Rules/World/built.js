@@ -57,14 +57,44 @@ const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, client
             .sort(({ score: scoreA }, { score: scoreB }) => scoreB - scoreA)
             .map(({ tile }) => tile);
         engine.emit('world:start-tiles', startingSquares);
+        // A civilization or leader chosen before the world is built (a game set up seat by seat, civ-clone/web-renderer#604)
+        //  is kept, and taken out of the choice before anyone else picks, so that a player choosing at random can't take
+        //  it. `Player#civilization` throws while unset, so this is the only way to ask. A preset leader is trusted to be
+        //  one of its civilization's: whoever set it chose it from that list.
+        const chosenCivilization = (player) => {
+            try {
+                return player.civilization();
+            }
+            catch (_a) {
+                return null;
+            }
+        };
+        clientRegistry.entries().forEach((client) => {
+            const civilization = chosenCivilization(client.player());
+            if (civilization === null) {
+                return;
+            }
+            civilizationRegistry.unregister(civilization.sourceClass());
+            const leader = civilization.leader();
+            if (leader !== null) {
+                leaderRegistry.unregister(leader.sourceClass());
+            }
+        });
         clientRegistry.entries()
             .reduce((promise, client) => promise.then(async () => {
-            const player = client.player(), CivilizationChoice = await client.chooseFromList(new ChoiceMeta_1.default(civilizationRegistry.entries(), 'choose-civilization')), civilization = new CivilizationChoice(attributeRegistry, cityNameRegistry);
-            player.setCivilization(civilization);
-            const LeaderChoice = await client.chooseFromList(new ChoiceMeta_1.default(leaderRegistry.getByCivilization(civilization.sourceClass()), 'choose-leader')), leader = new LeaderChoice(traitRegistry);
-            civilization.setLeader(leader);
-            civilizationRegistry.unregister(civilization.sourceClass());
-            leaderRegistry.unregister(leader.sourceClass());
+            const player = client.player();
+            let civilization = chosenCivilization(player);
+            if (civilization === null) {
+                const CivilizationChoice = await client.chooseFromList(new ChoiceMeta_1.default(civilizationRegistry.entries(), 'choose-civilization'));
+                civilization = new CivilizationChoice(attributeRegistry, cityNameRegistry);
+                player.setCivilization(civilization);
+                civilizationRegistry.unregister(civilization.sourceClass());
+            }
+            if (civilization.leader() === null) {
+                const LeaderChoice = await client.chooseFromList(new ChoiceMeta_1.default(leaderRegistry.getByCivilization(civilization.sourceClass()), 'choose-leader')), leader = new LeaderChoice(traitRegistry);
+                civilization.setLeader(leader);
+                leaderRegistry.unregister(leader.sourceClass());
+            }
             const [startingSquare] = ruleRegistry.process(PickStartTile_1.default, world, player, usedStartSquares);
             if (!startingSquare) {
                 throw new TypeError('Not enough `startingSquare`s.');
