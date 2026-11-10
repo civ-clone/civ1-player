@@ -7,8 +7,7 @@ import {
   instance as playerWorldRegistryInstance,
 } from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import Built from '@civ-clone/core-tile-improvement/Rules/Built';
-import Effect from '@civ-clone/core-rule/Effect';
-import Tile from '@civ-clone/core-world/Tile';
+import updatePlayerTiles from './lib/updatePlayerTiles';
 
 export const getRules = (
   playerRegistry: PlayerRegistry = playerRegistryInstance,
@@ -16,20 +15,7 @@ export const getRules = (
 ): Built[] => [
   new Built(
     'civ1-player:tile-improvement/built/update-player-tiles',
-    new Effect((tile: Tile) => {
-      tile.clearYieldCache(null);
-
-      playerRegistry.forEach((player) => {
-        const playerWorld = playerWorldRegistry.getByPlayer(player),
-          playerTile = playerWorld.getByTile(tile);
-
-        if (playerTile === null) {
-          return;
-        }
-
-        tile.clearYieldCache(player);
-      });
-    })
+    updatePlayerTiles(playerRegistry, playerWorldRegistry)
   ),
 ];
 
