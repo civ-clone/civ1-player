@@ -21,9 +21,9 @@ import {
 import Captured from '@civ-clone/core-city/Rules/Captured';
 import City from '@civ-clone/core-city/City';
 import Criterion from '@civ-clone/core-rule/Criterion';
-import Defeated from '@civ-clone/core-player/Rules/Defeated';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
+import { defeat } from '@civ-clone/base-player/lib/defeat';
 import isDefeated from '../../lib/isDefeated';
 import isBarbarian from '@civ-clone/base-civilization-barbarian/isBarbarian';
 
@@ -65,11 +65,7 @@ export const getRules = (
         //  captured or destroyed city supported, and when it was the player's last, the first of those to go defeats the
         //  player, taking the rest with it; defeating it again here brought another civilization back for each
         //  (civ-clone/web-renderer#600).
-        if (!playerRegistry.includes(player)) {
-          return;
-        }
-
-        ruleRegistry.process(Defeated, player, capturingPlayer);
+        defeat(player, capturingPlayer, playerRegistry, ruleRegistry);
       }
     )
   ),
