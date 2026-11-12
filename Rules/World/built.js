@@ -12,97 +12,31 @@ const PlayerWorldRegistry_1 = require("@civ-clone/core-player-world/PlayerWorldR
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const TraitRegistry_1 = require("@civ-clone/core-civilization/TraitRegistry");
 const Built_1 = require("@civ-clone/core-world/Rules/Built");
-const ChoiceMeta_1 = require("@civ-clone/core-client/ChoiceMeta");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Food_1 = require("@civ-clone/base-terrain-yield-food/Food");
 const Grassland_1 = require("@civ-clone/base-terrain-grassland/Grassland");
-const PickStartTile_1 = require("@civ-clone/core-world-generator/Rules/PickStartTile");
 const Plains_1 = require("@civ-clone/base-terrain-plains/Plains");
 const PlayerWorld_1 = require("@civ-clone/core-player-world/PlayerWorld");
 const Production_1 = require("@civ-clone/base-terrain-yield-production/Production");
 const River_1 = require("@civ-clone/base-terrain-river/River");
-const Spawn_1 = require("@civ-clone/core-player/Rules/Spawn");
 const Trade_1 = require("@civ-clone/base-terrain-yield-trade/Trade");
+const startTiles_1 = require("@civ-clone/base-player/lib/startTiles");
+const seatPlayers_1 = require("@civ-clone/base-player/lib/seatPlayers");
 const getRules = (civilizationRegistry = CivilizationRegistry_1.instance, clientRegistry = ClientRegistry_1.instance, engine = Engine_1.instance, playerRegistry = PlayerRegistry_1.instance, playerWorldRegistry = PlayerWorldRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, leaderRegistry = LeaderRegistry_1.instance, attributeRegistry = AttributeRegistry_1.instance, cityNameRegistry = CityNameRegistry_1.instance, traitRegistry = TraitRegistry_1.instance) => [
     new Built_1.default('civ1-player:world/built/register-player-worlds', new Effect_1.default((world) => playerRegistry
         .entries()
         .forEach((player) => playerWorldRegistry.register(new PlayerWorld_1.default(player, world))))),
     new Built_1.default('civ1-player:world/built/choose-start-tiles', new Effect_1.default((world) => {
-        const tileCache = new Map(), areaCache = new Map(), tileScore = (tile, player = null) => {
-            if (!tileCache.has(tile)) {
-                tileCache.set(tile, tile.score(player, [
-                    [Food_1.default, 8],
-                    [Production_1.default, 3],
-                    [Trade_1.default, 1],
-                ]));
-            }
-            return tileCache.get(tile);
-        }, areaScore = (tile, player = null) => {
-            if (!areaCache.has(tile)) {
-                areaCache.set(tile, tile
-                    .getSurroundingArea()
-                    .entries()
-                    .reduce((total, tile) => total + tileScore(tile, player), 0));
-            }
-            return areaCache.get(tile);
-        };
         engine.emit('world:generate-start-tiles');
-        const usedStartSquares = [], startingSquares = world
-            .entries()
-            .filter((tile) => [Grassland_1.default, Plains_1.default, River_1.default].some((TerrainType) => tile.terrain() instanceof TerrainType))
-            .map((tile) => ({
-            tile,
-            score: areaScore(tile),
-        }))
-            .sort(({ score: scoreA }, { score: scoreB }) => scoreB - scoreA)
-            .map(({ tile }) => tile);
+        // Where Civilization's players may start: grassland, plains or river, ranked by the area around each, with food
+        //  weighted 8, shields 3 and trade 1.
+        const startingSquares = (0, startTiles_1.default)(world, [Grassland_1.default, Plains_1.default, River_1.default], [
+            [Food_1.default, 8],
+            [Production_1.default, 3],
+            [Trade_1.default, 1],
+        ]);
         engine.emit('world:start-tiles', startingSquares);
-        // A civilization or leader chosen before the world is built (a game set up seat by seat, civ-clone/web-renderer#604)
-        //  is kept, and taken out of the choice before anyone else picks, so that a player choosing at random can't take
-        //  it. `Player#civilization` throws while unset, so this is the only way to ask. A preset leader is trusted to be
-        //  one of its civilization's: whoever set it chose it from that list.
-        const chosenCivilization = (player) => {
-            try {
-                return player.civilization();
-            }
-            catch (_a) {
-                return null;
-            }
-        };
-        clientRegistry.entries().forEach((client) => {
-            const civilization = chosenCivilization(client.player());
-            if (civilization === null) {
-                return;
-            }
-            civilizationRegistry.unregister(civilization.sourceClass());
-            const leader = civilization.leader();
-            if (leader !== null) {
-                leaderRegistry.unregister(leader.sourceClass());
-            }
-        });
-        clientRegistry.entries()
-            .reduce((promise, client) => promise.then(async () => {
-            const player = client.player();
-            let civilization = chosenCivilization(player);
-            if (civilization === null) {
-                const CivilizationChoice = await client.chooseFromList(new ChoiceMeta_1.default(civilizationRegistry.entries(), 'choose-civilization'));
-                civilization = new CivilizationChoice(attributeRegistry, cityNameRegistry);
-                player.setCivilization(civilization);
-                civilizationRegistry.unregister(civilization.sourceClass());
-            }
-            if (civilization.leader() === null) {
-                const LeaderChoice = await client.chooseFromList(new ChoiceMeta_1.default(leaderRegistry.getByCivilization(civilization.sourceClass()), 'choose-leader')), leader = new LeaderChoice(traitRegistry);
-                civilization.setLeader(leader);
-                leaderRegistry.unregister(leader.sourceClass());
-            }
-            const [startingSquare] = ruleRegistry.process(PickStartTile_1.default, world, player, usedStartSquares);
-            if (!startingSquare) {
-                throw new TypeError('Not enough `startingSquare`s.');
-            }
-            usedStartSquares.push(startingSquare);
-            ruleRegistry.process(Spawn_1.default, player, startingSquare);
-        }), Promise.resolve())
-            .then(() => engine.emit('game:start'));
+        (0, seatPlayers_1.default)(world, clientRegistry, civilizationRegistry, leaderRegistry, attributeRegistry, cityNameRegistry, traitRegistry, ruleRegistry).then(() => engine.emit('game:start'));
     })),
     new Built_1.default('civ1-player:world/built/emit', new Effect_1.default((world) => {
         engine.emit('world:built', world);

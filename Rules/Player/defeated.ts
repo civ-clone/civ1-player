@@ -14,6 +14,7 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Defeated from '@civ-clone/core-player/Rules/Defeated';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
+import { destroyUnits } from '@civ-clone/base-player/lib/defeat';
 import {
   UnitRegistry,
   instance as unitRegistryInstance,
@@ -42,25 +43,9 @@ export const getRules = (
   ),
   new Defeated(
     'civ1-player:player/defeated/destroy-units',
-    new Effect((player: Player, defeatingPlayer: Player | null) => {
-      const defeatedRules: [Defeated, boolean][] = ruleRegistry
-        .get(Defeated)
-        .map((rule) => [rule, rule.enabled()]);
-
-      defeatedRules.forEach(([rule]) => rule.disable());
-
-      unitRegistry
-        .getByPlayer(player)
-        .forEach((unit) => unit.destroy(defeatingPlayer));
-
-      defeatedRules.forEach(([rule, enabled]) => {
-        if (!enabled) {
-          return;
-        }
-
-        rule.enable();
-      });
-    })
+    new Effect((player: Player, defeatingPlayer: Player | null): void =>
+      destroyUnits(player, defeatingPlayer, ruleRegistry, unitRegistry)
+    )
   ),
   new Defeated(
     'civ1-player:player/defeated/emit',

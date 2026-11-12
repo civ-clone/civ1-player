@@ -8,8 +8,8 @@ const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const UnitRegistry_1 = require("@civ-clone/core-unit/UnitRegistry");
 const Captured_1 = require("@civ-clone/core-city/Rules/Captured");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
-const Defeated_1 = require("@civ-clone/core-player/Rules/Defeated");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
+const defeat_1 = require("@civ-clone/base-player/lib/defeat");
 const isDefeated_1 = require("../../lib/isDefeated");
 const isBarbarian_1 = require("@civ-clone/base-civilization-barbarian/isBarbarian");
 const getRules = (cityRegistry = CityRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, clientRegistry = ClientRegistry_1.instance, playerRegistry = PlayerRegistry_1.instance) => [
@@ -21,10 +21,7 @@ const getRules = (cityRegistry = CityRegistry_1.instance, ruleRegistry = RuleReg
         //  captured or destroyed city supported, and when it was the player's last, the first of those to go defeats the
         //  player, taking the rest with it; defeating it again here brought another civilization back for each
         //  (civ-clone/web-renderer#600).
-        if (!playerRegistry.includes(player)) {
-            return;
-        }
-        ruleRegistry.process(Defeated_1.default, player, capturingPlayer);
+        (0, defeat_1.defeat)(player, capturingPlayer, playerRegistry, ruleRegistry);
     })),
 ];
 exports.getRules = getRules;

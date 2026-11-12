@@ -5,6 +5,7 @@ import Player from '@civ-clone/core-player/Player';
 import Settlers from '@civ-clone/base-unit-settlers/Settlers';
 import Unit from '@civ-clone/core-unit/Unit';
 import { UnitRegistry } from '@civ-clone/core-unit/UnitRegistry';
+import baseIsDefeated from '@civ-clone/base-player/lib/isDefeated';
 import isHuman from '@civ-clone/civ1-difficulty/isHuman';
 
 /**
@@ -22,13 +23,12 @@ export const isDefeated = (
   leaving: City | Unit | null = null,
   settlersKeepAlive: boolean = isHuman(player, clientRegistry)
 ): boolean =>
-  cityRegistry.getByPlayer(player).every((city: City) => city === leaving) &&
-  (!settlersKeepAlive ||
-    unitRegistry
-      .getByPlayer(player)
-      .every(
-        (unit: Unit): boolean =>
-          unit === leaving || unit.destroyed() || !(unit instanceof Settlers)
-      ));
+  baseIsDefeated(
+    player,
+    cityRegistry,
+    unitRegistry,
+    leaving,
+    settlersKeepAlive ? (unit: Unit): boolean => unit instanceof Settlers : null
+  );
 
 export default isDefeated;
