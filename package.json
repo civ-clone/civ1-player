@@ -21,6 +21,8 @@
     "@civ-clone/base-civilization-babylonian": "^0.1.0",
     "@civ-clone/base-terrain-feature-shield": "^0.1.0",
     "@civ-clone/civ1-city": "github:civ-clone/civ1-city",
+    "@civ-clone/core-city-build": "^0.1.22",
+    "@civ-clone/core-city-growth": "^0.1.6",
     "@civ-clone/core-terrain": "^0.1.0",
     "@civ-clone/core-terrain-feature": "^0.1.0",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
