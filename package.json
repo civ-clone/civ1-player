@@ -50,6 +50,7 @@
     "@civ-clone/base-terrain-yield-production": "^0.1.0",
     "@civ-clone/base-terrain-yield-trade": "^0.1.0",
     "@civ-clone/base-unit-settlers": "^0.1.0",
+    "@civ-clone/base-unit-trait-founds-cities": "^0.1.0",
     "@civ-clone/civ1-difficulty": "github:civ-clone/civ1-difficulty",
     "@civ-clone/core-city": "^0.1.9",
     "@civ-clone/core-civ-client": "^0.1.0",
@@ -61,7 +62,7 @@
     "@civ-clone/core-player-world": "^0.1.0",
     "@civ-clone/core-rule": "^0.1.5",
     "@civ-clone/core-tile-improvement": "^0.1.6",
-    "@civ-clone/core-unit": "^0.1.0",
+    "@civ-clone/core-unit": "^0.1.31",
     "@civ-clone/core-world": "^0.1.10",
     "@civ-clone/core-yield": "^0.1.0"
   }

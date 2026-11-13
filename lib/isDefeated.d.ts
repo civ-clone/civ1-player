@@ -9,7 +9,8 @@ import { UnitRegistry } from '@civ-clone/core-unit/UnitRegistry';
  * out once it has no cities (v474.05 `StartGameMenu.cs` L644-716, checked after every capture), and the human once they
  * have no cities and no Settlers to found one with (`GameEngine.cs` L111-120). Losing a unit (`settlersKeepAlive`), a
  * player with no cities is out only once it has no Settlers either, so a computer player that hasn't founded its first
- * city yet isn't destroyed with the first unit it loses. Other units don't keep anyone in the game.
+ * city yet isn't destroyed with the first unit it loses. Other units don't keep anyone in the game. Settlers are the units
+ * that `FoundsCities`, asked of each unit, so of its own game's rules.
  */
 export declare const isDefeated: (
   player: Player,
