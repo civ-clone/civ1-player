@@ -1,28 +1,24 @@
+import {
+  endTurnActions,
+  hasNoOtherMandatoryActions,
+} from '@civ-clone/base-player/lib/endTurn';
 import Action from '@civ-clone/core-player/Rules/Action';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import EndTurn from '@civ-clone/base-player-action-end-turn/EndTurn';
 import Player from '@civ-clone/core-player/Player';
 import Priority from '@civ-clone/core-rule/Priority';
 
 // Defined here so we can reference it
-const endOfTurnRule = new Action(
+const endOfTurnRule: Action = new Action(
   'civ1-player:player/action/end-turn',
   // `Low` is probably enough in most cases, but just to make sure, it's over 9000
   new Priority(9001),
-  new Criterion((player: Player) => {
-    // Prevent infinite recursion...
-    endOfTurnRule.disable();
-
-    // Only whether there is one: listing them all made every `actions()` cost
-    // two full passes (civ-clone/web-renderer#314).
-    const hasOtherActions = player.hasMandatoryActions();
-
-    endOfTurnRule.enable();
-
-    return !hasOtherActions;
-  }),
-  new Effect((player: Player) => [new EndTurn(player, null)])
+  // Switched off while it asks, to prevent infinite recursion; only whether there is another is asked
+  //  (civ-clone/web-renderer#314).
+  new Criterion((player: Player) =>
+    hasNoOtherMandatoryActions(player, endOfTurnRule)
+  ),
+  new Effect((player: Player) => endTurnActions(player))
 );
 
 export const getRules = (): Action[] => [endOfTurnRule];

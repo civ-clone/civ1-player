@@ -4,24 +4,12 @@ exports.getEvents = void 0;
 const ClientRegistry_1 = require("@civ-clone/core-client/ClientRegistry");
 const Engine_1 = require("@civ-clone/core-engine/Engine");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
-const TurnStart_1 = require("@civ-clone/core-player/Rules/TurnStart");
+const turns_1 = require("@civ-clone/base-player/lib/turns");
 const getEvents = (clientRegistry = ClientRegistry_1.instance, engine = Engine_1.instance, ruleRegistry = RuleRegistry_1.instance) => [
     [
         'player:turn-start',
         (player) => {
-            try {
-                ruleRegistry.process(TurnStart_1.default, player);
-            }
-            catch (e) {
-                console.error(e);
-            }
-            const client = clientRegistry.getByPlayer(player);
-            client
-                .takeTurn()
-                .catch((error) => console.error(error))
-                .finally(() => {
-                engine.emit('player:turn-end', player);
-            });
+            (0, turns_1.startPlayerTurn)(player, clientRegistry, engine, ruleRegistry);
         },
     ],
 ];

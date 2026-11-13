@@ -26,6 +26,7 @@
     "@civ-clone/core-terrain": "^0.1.0",
     "@civ-clone/core-terrain-feature": "^0.1.0",
     "@civ-clone/core-world-generator": "^0.1.0",
+    "@civ-clone/core-yield": "^0.1.0",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.0.0",
     "@types/chai-spies": "^1.0.0",
@@ -41,7 +42,7 @@
   },
   "dependencies": {
     "@civ-clone/base-civilization-barbarian": "^0.1.0",
-    "@civ-clone/base-player": "^0.1.0",
+    "@civ-clone/base-player": "github:civ-clone/base-player#feat/player-turns",
     "@civ-clone/base-player-action-end-turn": "^0.1.0",
     "@civ-clone/base-terrain-grassland": "^0.1.0",
     "@civ-clone/base-terrain-plains": "^0.1.0",
@@ -53,7 +54,6 @@
     "@civ-clone/base-unit-trait-founds-cities": "^0.1.0",
     "@civ-clone/civ1-difficulty": "github:civ-clone/civ1-difficulty",
     "@civ-clone/core-city": "^0.1.9",
-    "@civ-clone/core-civ-client": "^0.1.0",
     "@civ-clone/core-civilization": "^0.1.0",
     "@civ-clone/core-client": "^0.1.0",
     "@civ-clone/core-engine": "^0.1.0",
@@ -63,7 +63,6 @@
     "@civ-clone/core-rule": "^0.1.5",
     "@civ-clone/core-tile-improvement": "^0.1.6",
     "@civ-clone/core-unit": "^0.1.31",
-    "@civ-clone/core-world": "^0.1.10",
-    "@civ-clone/core-yield": "^0.1.0"
+    "@civ-clone/core-world": "^0.1.10"
   }
 }

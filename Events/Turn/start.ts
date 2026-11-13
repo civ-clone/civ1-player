@@ -12,6 +12,7 @@ import {
 } from '@civ-clone/core-player/PlayerRegistry';
 import Player from '@civ-clone/core-player/Player';
 import isBarbarian from '@civ-clone/base-civilization-barbarian/isBarbarian';
+import { startTurn } from '@civ-clone/base-player/lib/turns';
 
 export const getEvents: (
   playerRegistry?: PlayerRegistry,
@@ -29,14 +30,14 @@ export const getEvents: (
       //  order they joined.
       const players = playerRegistry.entries();
 
-      currentPlayerRegistry.register(
-        ...players.filter((player: Player): boolean => isBarbarian(player)),
-        ...players.filter((player: Player): boolean => !isBarbarian(player))
+      startTurn(
+        [
+          ...players.filter((player: Player): boolean => isBarbarian(player)),
+          ...players.filter((player: Player): boolean => !isBarbarian(player)),
+        ],
+        currentPlayerRegistry,
+        engine
       );
-
-      const [currentPlayer] = currentPlayerRegistry.entries();
-
-      engine.emit('player:turn-start', currentPlayer);
     },
   ],
 ];

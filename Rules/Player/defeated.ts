@@ -15,6 +15,13 @@ import Defeated from '@civ-clone/core-player/Rules/Defeated';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import { destroyUnits } from '@civ-clone/base-player/lib/defeat';
+import { emitDefeated } from '@civ-clone/base-player/lib/events';
+import {
+  isInGame,
+  isStillToMove,
+  leaveGame,
+  stopMoving,
+} from '@civ-clone/base-player/lib/leaveGame';
 import {
   UnitRegistry,
   instance as unitRegistryInstance,
@@ -33,13 +40,15 @@ export const getRules = (
 ): Defeated[] => [
   new Defeated(
     'civ1-player:player/defeated/remove-current-player',
-    new Criterion((player: Player) => currentPlayerRegistry.includes(player)),
-    new Effect((player: Player) => currentPlayerRegistry.unregister(player))
+    new Criterion((player: Player) =>
+      isStillToMove(player, currentPlayerRegistry)
+    ),
+    new Effect((player: Player) => stopMoving(player, currentPlayerRegistry))
   ),
   new Defeated(
     'civ1-player:player/defeated/unregister',
-    new Criterion((player: Player) => playerRegistry.includes(player)),
-    new Effect((player: Player) => playerRegistry.unregister(player))
+    new Criterion((player: Player) => isInGame(player, playerRegistry)),
+    new Effect((player: Player) => leaveGame(player, playerRegistry))
   ),
   new Defeated(
     'civ1-player:player/defeated/destroy-units',
@@ -50,7 +59,7 @@ export const getRules = (
   new Defeated(
     'civ1-player:player/defeated/emit',
     new Effect((player: Player, capturingPlayer: Player | null): void => {
-      engine.emit('player:defeated', player, capturingPlayer);
+      emitDefeated(player, capturingPlayer, engine);
     })
   ),
 ];
