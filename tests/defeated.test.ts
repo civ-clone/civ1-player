@@ -22,6 +22,8 @@ import Client from '@civ-clone/core-client/Client';
 import ClientRegistry from '@civ-clone/core-client/ClientRegistry';
 import Settlers from '@civ-clone/base-unit-settlers/Settlers';
 import UnitRegistry from '@civ-clone/core-unit/UnitRegistry';
+import FoundsCities from '@civ-clone/base-unit-trait-founds-cities/FoundsCities';
+import { unitTraits } from '@civ-clone/core-unit/Rules/UnitTraits';
 
 use(spies);
 
@@ -169,7 +171,9 @@ describe('Player.defeated', (): void => {
           clientRegistry,
           playerRegistry
         ),
-        new Defeated(new Effect(defeatedEffect))
+        new Defeated(new Effect(defeatedEffect)),
+        // Settlers found cities, as civ1-unit declares (`Rules/Unit/traits`): what keeps a player with no cities in.
+        ...unitTraits('civ1-player:test/unit/trait', Settlers, FoundsCities)
       );
 
       return {
