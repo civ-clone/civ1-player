@@ -11,7 +11,7 @@ import {
   instance as ruleRegistryInstance,
 } from '@civ-clone/core-rule/RuleRegistry';
 import Player from '@civ-clone/core-player/Player';
-import TurnStart from '@civ-clone/core-player/Rules/TurnStart';
+import { startPlayerTurn } from '@civ-clone/base-player/lib/turns';
 
 export const getEvents: (
   clientRegistry?: ClientRegistry,
@@ -25,20 +25,7 @@ export const getEvents: (
   [
     'player:turn-start',
     (player: Player): void => {
-      try {
-        ruleRegistry.process(TurnStart, player);
-      } catch (e) {
-        console.error(e);
-      }
-
-      const client = clientRegistry.getByPlayer(player);
-
-      client
-        .takeTurn()
-        .catch((error) => console.error(error))
-        .finally((): void => {
-          engine.emit('player:turn-end', player);
-        });
+      startPlayerTurn(player, clientRegistry, engine, ruleRegistry);
     },
   ],
 ];
