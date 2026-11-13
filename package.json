@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@civ-clone/base-civilization-barbarian": "^0.1.0",
-    "@civ-clone/base-player": "github:civ-clone/base-player#feat/player-turns",
+    "@civ-clone/base-player": "^0.1.1",
     "@civ-clone/base-player-action-end-turn": "^0.1.0",
     "@civ-clone/base-terrain-grassland": "^0.1.0",
     "@civ-clone/base-terrain-plains": "^0.1.0",
